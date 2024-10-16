@@ -75,4 +75,30 @@ fill_shape -> C fill_shape shape to R , G , B =>il faut que le curseur soit dans
             exemple : C1 fill_shape square in 255,0,0
             (A partir de la localisation du curseur C1 remplir le carré en rouge)
 
+Animer une forme : 
+animate -> C animate shape animation =>il faut determiner les animations proposées et la vitesse
+		exemple : C1 animate circle rotate
+		(A partir de la localisation du curseur C1 animer le cercle et le faire tourner)
+		
+		
+Instructions évoluées :
+
+Assigner des valeurs à des variables :
+let_var = valeur
+		exemple : let size = 10
+		(Affecter la valeur 10 à la variable size)
+		
+Instruction de bloc : 
+{instructions}
+		exemple : {move_cursor C1 at 15,10 
+			   C1 draw_line 20;}
+		(Regroupe des instructions en bloc)
+		
+Instructions Conditionnelles :
+if condition {instructions} else {instructions}
+		exemple : if x>10 { C1 draw_line 20; } else {C1 draw line 10; }
+		
+Instructions Répétitives : 
+for,while,do-while
+		exemple : for i in 1..5 { C1 draw_square 20; }
 
