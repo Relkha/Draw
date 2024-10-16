@@ -65,5 +65,18 @@ draw_arc -> C draw_arc x , y / a , b
       (A partir du curseur C1 dessiner un arc de cercle qui ira du point d'abcisse 10 et d'ordonnée 15 jusqu'au point d'abcisse 15 et d'ordonnée 10)
 
 Dessiner une ellipse : 
-draw_ellipse -> draw_ellipse x , y
+draw_ellipse -> C draw_ellipse x , y
       exemple : C1 draw_ellipse 10,15
+      (A partir du curseur C1 dessiner un ellipse avec comme axe mineur 10 et axe majeur 15)
+
+Dessiner une étoile :
+draw_star -> C draw_star x in y
+            exemple : C1 draw_star 5 in 10
+            (A partir du curseur C1 dessiner une étoile avec 5 branches de chacunes 10 pixels)
+
+Remplir une forme :
+fill_shape -> C fill_shape shape to R , G , B =>il faut que le curseur soit dans la forme 
+            exemple : C1 fill_shape square in 255,0,0
+            (A partir de la localisation du curseur C1 remplir le carré en rouge)
+
+
