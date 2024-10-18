@@ -42,7 +42,7 @@ SMAILI Adel ;
 
 
 
-Pour deposer des modifications depuis un depot local :
+# Aide : Pour deposer des modifications depuis un depot local :
 1.git add .
 2.git commit -m "Message décrivant les modifications"
 3.git push origin main
