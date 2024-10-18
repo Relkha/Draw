@@ -6,9 +6,10 @@
 Le projet Draw++ a pour objectif de concevoir un langage de programmation spécifique permettant de dessiner des formes géométriques à l’écran à partir d’instructions définies. Le langage inclut un répertoire d'instructions élémentaires et évoluées, ainsi qu'un environnement de développement intégré (IDE) pour faciliter la création, l'édition et l'exécution de programmes écrits en Draw++.
 
 
-#Fonctionnalités Principales
+# Fonctionnalités Principales
 
-    #Instructions Élémentaires :
+    
+    # Instructions Élémentaires :
         Créer et manipuler des curseurs de dessin.
         Dessiner des formes comme des segments, carrés, cercles, etc.
         Faire avancer et pivoter un curseur selon des coordonnées ou des degrés.
