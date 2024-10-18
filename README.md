@@ -11,18 +11,18 @@ Le projet Draw++ a pour objectif de concevoir un langage de programmation spéci
 
     
 # Instructions Élémentaires 
-        Créer et manipuler des curseurs de dessin.
-        Dessiner des formes comme des segments, carrés, cercles, etc.
-        Faire avancer et pivoter un curseur selon des coordonnées ou des degrés.
-        Affecter des couleurs et des épaisseurs aux curseurs.
-        Animer des dessins.
+    Créer et manipuler des curseurs de dessin.
+    Dessiner des formes comme des segments, carrés, cercles, etc.
+    Faire avancer et pivoter un curseur selon des coordonnées ou des degrés.
+    Affecter des couleurs et des épaisseurs aux curseurs.
+    Animer des dessins.
 # Instructions Évoluées 
-        Assignation de valeurs à des variables.
-        Instructions de bloc, conditionnelles (if, else) et répétitives (for, while).
+    Assignation de valeurs à des variables.
+    Instructions de bloc, conditionnelles (if, else) et répétitives (for, while).
 # IDE Intégré 
-        Création et gestion de fichiers Draw++.
-        Exécution de programmes avec gestion des erreurs.
-        Outils pour zoomer, déplacer, et modifier des dessins.
+    Création et gestion de fichiers Draw++.
+    Exécution de programmes avec gestion des erreurs.
+    Outils pour zoomer, déplacer, et modifier des dessins.
 
 
 # Documentation
@@ -32,11 +32,11 @@ Une documentation détaillée de la syntaxe est disponible dans le fichier /synt
 
 # Équipe de Développement
 
-YAZIDI Asma
-EL KHARROUBI Rayan
-MEGNOUX Julien
-MEDDOUR Bissem
-SMAILI Adel
+YAZIDI Asma ; 
+EL KHARROUBI Rayan ; 
+MEGNOUX Julien ; 
+MEDDOUR Bissem ;
+SMAILI Adel ;
 
 
 
