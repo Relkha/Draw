@@ -43,9 +43,11 @@ SMAILI Adel ;
 
 
 # Aide : Pour deposer des modifications depuis un depot local :
-1.git add .
-2.git commit -m "Message décrivant les modifications"
-3.git push origin main
+1. Avant le add toujours faire un 'git pull' pour ne pas écraser le travail des autres.
+2.'git add .'
+3.'git commit -m "Message décrivant les modifications"'
+4. Avant le 'git push origin main', toujours faire validé ces modifs en testant et par l'équipe.
+5. 'git push origin main'
 
 
 
