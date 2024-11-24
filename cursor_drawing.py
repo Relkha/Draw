@@ -23,7 +23,7 @@ class CursorManager:
             _, name = parts
             self.hide_cursor(name)
 
-        elif action == "color_cursor" and len(parts) == 5:
+        elif action == "color_cursor" and len(parts) == 6:
             _, name, _, r, g, b = parts
             self.color_cursor(name, int(r), int(g), int(b))
 
