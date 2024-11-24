@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class CursorManager:
     def __init__(self, canvas):
         self.canvas = canvas
@@ -7,6 +8,7 @@ class CursorManager:
 
     def execute_command(self, command):
         parts = command.split()
+        print("im here")
         if not parts:
             return
 
@@ -45,7 +47,7 @@ class CursorManager:
             print(f"Le curseur {name} existe déjà.")
             return
         cursor = self.canvas.create_oval(x - 5, y - 5, x + 5, y + 5, fill="#aaaaaa", outline="#aaaaaa", width=1)
-        self.cursors[name] = {'id': cursor, 'visible': True, 'angle': 0}
+        self.cursors[name] = {'id': cursor, 'visible': True, 'angle': 0, 'position': (x, y)}
 
     def show_cursor(self, name):
         if self._cursor_exists(name):
@@ -80,15 +82,16 @@ class CursorManager:
             return False
         return True
 
+
 class DrawingApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Drawing App with Text Commands")
-        
+
         # Création du canvas for dark mode
         self.canvas = tk.Canvas(root, width=600, height=400, bg="#2e2e2e")
         self.canvas.pack()
-        
+
         # Gestionnaire de curseurs
         self.cursor_manager = CursorManager(self.canvas)
 
@@ -97,7 +100,8 @@ class DrawingApp:
         self.text_area.pack(fill='x')
 
         # Bouton pour exécuter les commandes
-        execute_button = tk.Button(root, text="Exécuter Commandes", command=self.execute_commands, bg="#444444", fg="white")
+        execute_button = tk.Button(root, text="Exécuter Commandes", command=self.execute_commands, bg="#444444",
+                                   fg="white")
         execute_button.pack()
 
     def execute_commands(self):
@@ -105,10 +109,3 @@ class DrawingApp:
         for command in commands:
             self.cursor_manager.execute_command(command)
         self.text_area.delete("1.0", tk.END)  # Nettoie la zone de texte après exécution
-
-# Exécution de l'application
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = DrawingApp(root)
-    root.mainloop()
-
