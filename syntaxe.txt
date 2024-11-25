@@ -2,7 +2,7 @@ Instructions élémentaires :
 
 Créer un curseur : 
 create_cursor -> create_cursor C at x , y
-      exemple : create_cursor C1 at 10,15    
+      exemple : create_cursor C1 at 10 15    
       (Créer un curseur nommé C1 au point d'abcisse 10 et d'ordonnée 15)
 
 Montrer un curseur : 
