@@ -267,23 +267,23 @@ def analyze_and_extract_commands(user_input):
                     'y': int(tokens[5][1])   # Coordonnée Y (avant ')')
                 }
                 print(f"Extracted create_cursor data: {command_data}")  # Affichage des données extraites
-            elif tokens[0][1] == 'move_cursor' and len(tokens) == 5:
+            elif tokens[0][1] == 'move_cursor' and len(tokens) == 7:
                 # Commande move_cursor : Nom, X, Y
                 command_data = {
                     'command': 'move_cursor',
                     'name': tokens[1][1],  # Le nom du curseur
                     'x': int(tokens[3][1]),  # Coordonnée X
-                    'y': int(tokens[4][1])   # Coordonnée Y
+                    'y': int(tokens[5][1])   # Coordonnée Y
                 }
                 print(f"Extracted move_cursor data: {command_data}")  # Affichage des données extraites
-            elif tokens[0][1] == 'color_cursor' and len(tokens) == 7:
+            elif tokens[0][1] == 'color_cursor' and len(tokens) == 9:
                 # Commande color_cursor : Nom, R, G, B
                 command_data = {
                     'command': 'color_cursor',
                     'name': tokens[1][1],  # Le nom du curseur
                     'r': int(tokens[3][1]),  # Couleur R
-                    'g': int(tokens[4][1]),  # Couleur G
-                    'b': int(tokens[5][1])   # Couleur B
+                    'g': int(tokens[5][1]),  # Couleur G
+                    'b': int(tokens[7][1])   # Couleur B
                 }
                 print(f"Extracted color_cursor data: {command_data}")  # Affichage des données extraites
 

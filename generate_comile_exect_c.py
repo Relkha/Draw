@@ -18,13 +18,28 @@ int main() {
             cursor_positions[command['name']] = {'x': command['x'], 'y': command['y']}
             main_c_code += f'    create_cursor("{command["name"]}", {command["x"]}, {command["y"]});\n'
         elif command['command'] == 'move_cursor':
-            # Déplacer le curseur en fonction de son nom et de ses coordonnées dans le dictionnaire
+            # Vérifie si le curseur existe déjà
             if command['name'] in cursor_positions:
-                cursor_positions[command['name']]['x'] += command['dx']
-                cursor_positions[command['name']]['y'] += command['dy']
-            main_c_code += f'    move_cursor("{command["name"]}", {command["dx"]}, {command["dy"]});\n'
+                # Mise à jour de la position dans le dictionnaire
+                cursor_positions[command['name']] = {'x': command['x'], 'y': command['y']}
+                main_c_code += f'    move_cursor("{command["name"]}", {command["x"]}, {command["y"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
         elif command['command'] == 'color_cursor':
-            main_c_code += f'    color_cursor("{command["name"]}", {command["r"]}, {command["g"]}, {command["b"]});\n'
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                # Ajout ou mise à jour de la couleur dans le dictionnaire (si besoin)
+                cursor_positions[command['name']]['color'] = {
+                    'r': command['r'],
+                    'g': command['g'],
+                    'b': command['b']
+                }
+                # Génération du code C
+                main_c_code += f'    color_cursor("{command["name"]}", {command["r"]}, {command["g"]}, {command["b"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+
 
     main_c_code += '''    SDL_Event event;
     int running = 1;
