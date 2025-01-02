@@ -4,9 +4,7 @@
 
 int main() {
     initialize_graphics();  // Initialisation de la fenêtre et du renderer
-    create_cursor("C", 100, 200);
-    move_cursor("C", 350, 120);
-    color_cursor("C", 255, 25, 20);
+    create_cursor("C", 100, 250);
     SDL_Event event;
     int running = 1;
     while (running) {

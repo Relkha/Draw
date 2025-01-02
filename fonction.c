@@ -53,24 +53,6 @@ void initialize_graphics() {
     printf("Graphiques initialisés avec succès.\n");
 }
 
-// Fonction pour redessiner tous les curseurs avec leurs couleurs respectives
-void redraw_all_cursors() {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Fond blanc
-    SDL_RenderClear(renderer);
-
-    for (int i = 0; i < cursor_count; i++) {
-        SDL_SetRenderDrawColor(renderer, cursors[i].r, cursors[i].g, cursors[i].b, 255);
-        SDL_Rect cursor = {
-            cursors[i].x - CURSOR_SIZE / 2,
-            cursors[i].y - CURSOR_SIZE / 2,
-            CURSOR_SIZE,
-            CURSOR_SIZE
-        };
-        SDL_RenderFillRect(renderer, &cursor);
-    }
-
-    SDL_RenderPresent(renderer); // Actualise l'écran
-}
 
 // Fonction pour créer un curseur
 void create_cursor(const char *name, int x, int y) {
@@ -106,60 +88,4 @@ void create_cursor(const char *name, int x, int y) {
     printf("Curseur '%s' créé aux coordonnées (%d, %d).\n", name, x, y);
 }
 
-// Fonction pour déplacer un curseur
-void move_cursor(const char *name, int x, int y) {
-    // Vérifie les coordonnées
-    if (x < 0 || y < 0 || x >= 600 || y >= 400) {
-        printf("Erreur : Les coordonnées (%d, %d) sont hors de la fenêtre.\n", x, y);
-        return;
-    }
-
-    // Recherche du curseur par son nom
-    int found = 0;
-    for (int i = 0; i < cursor_count; i++) {
-        if (strcmp(cursors[i].name, name) == 0) {
-            cursors[i].x = x;
-            cursors[i].y = y;
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found) {
-        printf("Erreur : Aucun curseur trouvé avec le nom '%s'.\n", name);
-        return;
-    }
-
-    redraw_all_cursors();
-    printf("Le curseur '%s' a été déplacé aux coordonnées (%d, %d).\n", name, x, y);
-}
-
-// Fonction pour changer la couleur d'un curseur
-void color_cursor(const char *name, int r, int g, int b) {
-    // Vérifie que la couleur est valide
-    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-        printf("Erreur : Les valeurs de couleur doivent être entre 0 et 255.\n");
-        return;
-    }
-
-    // Recherche du curseur par son nom
-    int found = 0;
-    for (int i = 0; i < cursor_count; i++) {
-        if (strcmp(cursors[i].name, name) == 0) {
-            cursors[i].r = r;
-            cursors[i].g = g;
-            cursors[i].b = b;
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found) {
-        printf("Erreur : Aucun curseur trouvé avec le nom '%s'.\n", name);
-        return;
-    }
-
-    redraw_all_cursors();
-    printf("Le curseur '%s' a été coloré en (%d, %d, %d).\n", name, r, g, b);
-}
 
