@@ -1,9 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog, simpledialog, Text, ttk
-from analyse_input import analyze_and_highlight, apply_token_colors
+from analyse_input import analyze_and_highlight
 from lexer import Lexer
 from parser import Parser
 from generate_comile_exect_c import generate_and_compile
+from autocomplete import Autocomplete
+from interactive_doc import open_documentation_window
+
+
 
 # Créer la fenêtre principale
 root = tk.Tk()
@@ -20,20 +24,39 @@ open_files = {}
 # Initialiser le mode sombre par défaut
 is_dark_mode = False  # Par défaut, mode lumineux
 
+
 # Fonction pour appliquer le thème à un widget spécifique
 def apply_theme_to_widget(text_widget):
-    bg_color = "#1e1e1e" if is_dark_mode else "white"
-    text_fg_color = "white" if is_dark_mode else "black"
-    text_widget.configure(bg=bg_color, fg=text_fg_color)
+    if is_dark_mode:  # Thème sombre
+        text_widget.configure(bg="#1e1e1e", fg="white", insertbackground="white")
+    else:  # Thème clair
+        text_widget.configure(bg="white", fg="black", insertbackground="black")
+
+    configure_tags(text_widget)  # Reconfigurer les tags
+
+def apply_default_tag(text_widget):
+    text_widget.tag_add("default", "1.0", "end")  # Appliquer le tag "default" à tout le texte
 
 # Fonction pour configurer les tags de mise en forme
 def configure_tags(text_widget):
-    text_widget.tag_configure("function", foreground="blue", font=("Helvetica", 15, "bold"))
-    text_widget.tag_configure("keyword", foreground="blue", font=("Helvetica", 15, "bold"))
-    text_widget.tag_configure("conditional", foreground="green", font=("Helvetica", 15, "italic"))
-    text_widget.tag_configure("shape", foreground="purple", font=("Helvetica", 15, "italic"))
-    text_widget.tag_configure("valid", foreground="black", font=("Helvetica", 15))
-    text_widget.tag_configure("incorrect", foreground="red", font=("Helvetica", 15, "bold"))
+    if is_dark_mode:  # Configuration en mode sombre
+        text_widget.tag_configure("function", foreground="cyan", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("conditional", foreground="violet", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("loop", foreground="orange", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("shape", foreground="green", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("valid", foreground="white")  # Texte valide en blanc
+        text_widget.tag_configure("incorrect", foreground="red")  # Erreur en rouge
+        text_widget.tag_configure("default", foreground="white")  # Par défaut en blanc
+    else:  # Configuration en mode clair
+        text_widget.tag_configure("function", foreground="blue", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("conditional", foreground="purple", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("loop", foreground="orange", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("shape", foreground="green", font=("Helvetica", 10, "bold"))
+        text_widget.tag_configure("valid", foreground="black")  # Texte valide en noir
+        text_widget.tag_configure("incorrect", foreground="red")  # Erreur en rouge
+        text_widget.tag_configure("default", foreground="black")  # Par défaut en noir
+
+
 
 #Fonction pour les frappes par onglets
 def on_key_release(event, text_widget):
@@ -63,6 +86,7 @@ def create_new_tab(title="Nouveau fichier"):
     }
     # Appliquer le thème dès la création de l'onglet
     apply_theme_to_widget(text_widget)
+    autocomplete = Autocomplete(text_widget)
     return text_widget
 
 # Fonction pour fermer un onglet
@@ -215,13 +239,6 @@ def toggle_theme():
     else:
         tk.messagebox.showerror("Erreur", "Impossible de trouver l'onglet actif.")
 
-# Configurer les tags pour la mise en forme
-def configure_tags(text_widget):
-    text_widget.tag_configure("function", foreground="blue", font=("Helvetica", 10, "bold"))  # Commandes
-    text_widget.tag_configure("conditional", foreground="purple", font=("Helvetica", 10, "italic"))  # Conditionnels
-    text_widget.tag_configure("valid", foreground="black")  # Contenu valide
-    text_widget.tag_configure("incorrect", foreground="red")  # Contenu invalide
-
 def analyze_and_extract_commands(user_input):
     # Si l'entrée est une liste (comme pour plusieurs lignes de texte), on la garde telle quelle.
     if isinstance(user_input, list):
@@ -257,7 +274,6 @@ def analyze_and_extract_commands(user_input):
             print(f"First token: {tokens[0]}")  # Affichage du premier token
             print(f"Second token: {tokens[1]}")  # Affichage du deuxième token
 
-            # Ajuster l'extraction des données en prenant en compte les parenthèses et la virgule
             if tokens[0][1] == 'create_cursor' and len(tokens) == 7:
                 # Commande create_cursor : Nom, X, Y (ignorer les parenthèses et la virgule)
                 command_data = {
@@ -286,13 +302,115 @@ def analyze_and_extract_commands(user_input):
                     'b': int(tokens[7][1])   # Couleur B
                 }
                 print(f"Extracted color_cursor data: {command_data}")  # Affichage des données extraites
+            elif tokens[0][1] == 'draw_line' and len(tokens) == 3:
+                # Commande draw_line : Nom, longueur
+                command_data = {
+                    'command': 'draw_line',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'length': int(tokens[2][1])  # Longueur de la ligne
+                }
+                print(f"Extracted draw_line data: {command_data}")
+            elif tokens[0][1] == 'show_cursor' and len(tokens) == 2:
+                # Commande show_cursor : Nom
+                command_data = {
+                    'command': 'show_cursor',
+                    'name': tokens[1][1]  # Le nom du curseur
+                }
+                print(f"Extracted show_cursor data: {command_data}")
+
+            elif tokens[0][1] == 'hide_cursor' and len(tokens) == 2:
+                # Commande hide_cursor : Nom
+                command_data = {
+                    'command': 'hide_cursor',
+                    'name': tokens[1][1]  #Le nom du curseur
+                }
+                print(f"Extracted hide_cursor data: {command_data}")
+
+            elif tokens[0][1] == 'rotate_cursor' and len(tokens) == 3:
+                 # Commande rotate_cursor : Nom, angle
+                command_data = {
+                    'command': 'rotate_cursor',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'angle': int(tokens[2][1])  # Angle en degrés
+                }
+                print(f"Extracted rotate_cursor data: {command_data}")
+
+            elif tokens[0][1] == 'thickness_cursor' and len(tokens) == 3:
+                # Commande thickness_cursor : Nom, épaisseur
+                command_data = {
+                    'command': 'thickness_cursor',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'thickness': int(tokens[2][1])  # Épaisseur
+                }
+                print(f"Extracted thickness_cursor data: {command_data}")
+
+            elif tokens[0][1] == 'draw_rectangle' and len(tokens) == 7:
+                # Commande draw_rectangle : Nom, dimensions (x, y)
+                print("Debug.")
+                command_data = {
+                    'command': 'draw_rectangle',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'width': int(tokens[3][1]),  # Largeur
+                    'height': int(tokens[5][1])  # Hauteur
+                }
+                print(f"Extracted draw_rectangle data: {command_data}")
+
+            elif tokens[0][1] == 'draw_square' and len(tokens) == 3:
+                # Commande draw_square : Nom, taille du côté
+                command_data = {
+                    'command': 'draw_square',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'size': int(tokens[2][1])  # Taille du côté
+                }
+                print(f"Extracted draw_square data: {command_data}")
+
+            elif tokens[0][1] == 'draw_circle' and len(tokens) == 3:
+                # Commande draw_circle : Nom, rayon
+                command_data = {
+                    'command': 'draw_circle',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'radius': int(tokens[2][1])  # Rayon
+                }
+                print(f"Extracted draw_circle data: {command_data}")
+
+            elif tokens[0][1] == 'draw_arc' and len(tokens) == 5:
+                # Commande draw_arc : Nom, rayon, angle de début, angle de fin
+                command_data = {
+                    'command': 'draw_arc',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'radius': int(tokens[2][1]),  # Rayon
+                    'start_angle': int(tokens[3][1]),  # Angle de départ
+                    'end_angle': int(tokens[4][1])  # Angle de fin
+                }
+                print(f"Extracted draw_arc data: {command_data}")
+
+            elif tokens[0][1] == 'draw_ellipse' and len(tokens) == 7:
+                # Commande draw_ellipse : Nom, dimensions (x, y)
+                command_data = {
+                    'command': 'draw_ellipse',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'width': int(tokens[3][1]),  # Largeur
+                    'height': int(tokens[5][1])  # Hauteur
+                }
+                print(f"Extracted draw_ellipse data: {command_data}")
+
+            elif tokens[0][1] == 'draw_star' and len(tokens) == 4:
+                # Commande draw_star : Nom, nombre de branches, taille des branches
+                command_data = {
+                    'command': 'draw_star',
+                    'name': tokens[1][1],  # Le nom du curseur
+                    'branches': int(tokens[2][1]),  # Nombre de branches
+                    'size': int(tokens[3][1])  # Taille des branches
+                }
+                print(f"Extracted draw_star data: {command_data}")
+
 
             # Ajouter les données extraites à la liste
             if command_data:
                 commands_data.append(command_data)
         else:
             print(f"Erreur de syntaxe dans la commande : {error_token}")
-
+    print(f"Commandes extraites : {commands_data}")
     return commands_data
 
 
@@ -325,6 +443,9 @@ menu_commands = {
     },
     'Luminosité': {
         'Basculer mode': toggle_theme
+    },
+    'Aide': {
+        'Documentation': open_documentation_window  # Lancer la documentation interactive
     }
 }
 

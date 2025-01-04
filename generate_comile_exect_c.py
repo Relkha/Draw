@@ -38,6 +38,83 @@ int main() {
                 main_c_code += f'    color_cursor("{command["name"]}", {command["r"]}, {command["g"]}, {command["b"]});\n'
             else:
                 print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+        elif command['command'] == 'draw_line':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                # Génération du code C pour dessiner une ligne
+                main_c_code += f'    draw_line("{command["name"]}", {command["length"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+        elif command['command'] == 'show_cursor':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    show_cursor("{command["name"]}");\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'hide_cursor':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    hide_cursor("{command["name"]}");\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'rotate_cursor':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    rotate_cursor("{command["name"]}", {command["angle"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'thickness_cursor':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    thickness_cursor("{command["name"]}", {command["thickness"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'draw_rectangle':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    draw_rectangle("{command["name"]}", {command["width"]}, {command["height"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'draw_square':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    draw_square("{command["name"]}", {command["size"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'draw_circle':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    draw_circle("{command["name"]}", {command["radius"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'draw_arc':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    draw_arc("{command["name"]}", {command["radius"]}, {command["start_angle"]}, {command["end_angle"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'draw_ellipse':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    draw_ellipse("{command["name"]}", {command["width"]}, {command["height"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
+        elif command['command'] == 'draw_star':
+            # Vérifie si le curseur existe déjà
+            if command['name'] in cursor_positions:
+                main_c_code += f'    draw_star("{command["name"]}", {command["branches"]}, {command["size"]});\n'
+            else:
+                print(f"Erreur : Le curseur '{command['name']}' n'existe pas. Commande ignorée.")
+
 
 
 
@@ -67,7 +144,7 @@ int main() {
 
 def compile_and_run():
     # Compiler le code C
-    compilation_result = os.system("gcc main.c -o draw_program -lSDL2")
+    compilation_result = os.system("gcc main.c -o draw_program -lSDL2 -lm")
     if compilation_result != 0:
         print("Compilation échouée.")
         return
