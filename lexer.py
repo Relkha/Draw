@@ -7,11 +7,13 @@ with open("keywords.json", "r") as f:
 commands_ = "|".join(keywords_data["commands"].keys())  # Mots-clés des commandes
 conditionals_ = "|".join(keywords_data["conditionals"].keys())  # Mots-clés des conditionnels
 shapes_ = "|".join(keywords_data["shapes"])  # Mots-clés des formes
+loops_ = "|".join(keywords_data["loops"].keys())  # Mots-clés des boucles
 
 # Définir les types de tokens pour la nouvelle syntaxe
 TOKEN_TYPES = [
     ('KEYWORD', rf'\b({commands_})\b'),  # Mots-clés des commandes
     ('CONDITIONAL', rf'\b({conditionals_})\b'),  # Mots-clés conditionnels
+    ('LOOP', rf'\b({loops_})\b'),  # Mots-clés des boucles
     ('SHAPE', rf'\b({shapes_})\b'),  # Formes valides
     ('IDENTIFIER', r'[A-Za-z_][A-Za-z0-9_]*'),  # Identifiants (ex. C)
     ('NUMBER', r'\d+'),  # Nombres (ex. 150, 100)

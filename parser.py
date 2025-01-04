@@ -26,15 +26,25 @@ class Parser:
         self.position = 0
 
     def _current_token(self):
+        """Retourne le token actuel."""
         return self.tokens[self.position] if self.position < len(self.tokens) else None
 
     def _advance(self):
+        """Avance à la prochaine position des tokens."""
         if self.position < len(self.tokens):
             self.position += 1
 
+    def _match(self, expected_type):
+        """Vérifie si le token courant correspond au type attendu."""
+        token = self._current_token()
+        if token and token[0] == expected_type:
+            self._advance()
+            return True
+        return False
+
     def parse(self):
         """
-        Main parsing method for both simple commands and conditionals.
+        Méthode principale pour analyser les commandes.
         """
         current = self._current_token()
         if not current:
@@ -44,56 +54,74 @@ class Parser:
             return self._parse_simple_command()
         elif current[0] == "CONDITIONAL":
             return self._parse_conditional(current[1])
+        elif current[0] == "LOOP":
+            return self._parse_loop()
         else:
             return False, f"Unexpected token: {current[0]}"
 
     def _parse_simple_command(self):
-        # Validate a simple command (e.g., create_cursor).
+        """
+        Valide une commande simple en se basant sur keywords.json.
+        """
         command = self._current_token()
-        if command[0] != "KEYWORD":
+        if not command or command[0] != "KEYWORD":
             return False, "Expected a command keyword"
 
-        self._advance()
-        if not self._current_token() or self._current_token()[0] != "IDENTIFIER":
-            return False, "Expected an identifier"
+        command_name = command[1]
+        if command_name not in commands:
+            return False, f"Unknown command: {command_name}"
 
+        expected_args = commands[command_name]["args"]  # Arguments attendus depuis keywords.json
         self._advance()
-        if not self._current_token() or self._current_token()[0] != "LPAREN":
-            return False, "Expected '('"
 
-        self._advance()
-        while self._current_token() and self._current_token()[0] != "RPAREN":
-            if self._current_token()[0] not in ["NUMBER", "COMMA"]:
-                return False, "Expected numbers or ',' inside parentheses"
-            self._advance()
+        for expected_type in expected_args:
+            # Ignorer les espaces (WHITESPACE) s'ils existent
+            while self._current_token() and self._current_token()[0] == "WHITESPACE":
+                self._advance()
+            
+            if not self._match(expected_type):
+                return False, f"Expected {expected_type} after {command_name}"
 
-        if not self._current_token() or self._current_token()[0] != "RPAREN":
-            return False, "Expected ')'"
-
-        self._advance()
         return True, None
 
     def _parse_conditional(self, keyword):
-        # Validate a conditional block (e.g., if, else).
-        self._advance()
-        if keyword == "if":
-            if not self._current_token() or self._current_token()[0] != "LPAREN":
-                return False, "Expected '(' after 'if'"
-            self._advance()
-            if not self._current_token() or self._current_token()[0] != "SHAPE":
-                return False, "Expected a shape in 'if' condition"
-            self._advance()
-            if not self._current_token() or self._current_token()[0] != "RPAREN":
-                return False, "Expected ')'"
-            self._advance()
+        """
+        Valide une instruction conditionnelle (if / else).
+        """
+        if keyword not in conditionals:
+            return False, f"Unknown conditional: {keyword}"
 
-        if not self._current_token() or self._current_token()[0] != "COLON":
-            return False, f"Expected ':' after '{keyword}'"
+        expected_args = conditionals[keyword]["args"]
         self._advance()
 
-        while self._current_token() and self._current_token()[0] in ["KEYWORD", "IDENTIFIER"]:
-            success, error_message = self.parse()
-            if not success:
-                return False, error_message
+        for expected_type in expected_args:
+            while self._current_token() and self._current_token()[0] == "WHITESPACE":
+                self._advance()
+            
+            if not self._match(expected_type):
+                return False, f"Expected {expected_type} in conditional block"
+
+        return True, None
+
+    def _parse_loop(self):
+        """
+        Valide une boucle de type `repeat` en se basant sur keywords.json.
+        """
+        loop_keyword = self._current_token()
+        if not loop_keyword or loop_keyword[1] != "repeat":
+            return False, "Expected 'repeat' keyword"
+
+        # Récupération des arguments attendus depuis keywords.json
+        expected_args = keywords_data["loops"]["repeat"]["args"]
+        self._advance()  # Avancer après le mot-clé 'repeat'
+
+        for expected_type in expected_args:
+            # Ignorer les espaces (WHITESPACE)
+            while self._current_token() and self._current_token()[0] == "WHITESPACE":
+                self._advance()
+
+            # Vérifier si le token correspond au type attendu
+            if not self._match(expected_type):
+                return False, f"Expected {expected_type} in loop declaration"
 
         return True, None

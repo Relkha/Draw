@@ -57,6 +57,12 @@
             "block": true
         }
     },
+    "loops": {
+        "repeat": {
+            "args": ["LPAREN", "NUMBER", "RPAREN", "COLON"],
+            "block": true
+        }
+    },
     
     "shapes":["cursor", "line", "rectangle", "square", "circle", "arc", "ellipse", "star"]
 }
