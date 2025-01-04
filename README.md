@@ -6,15 +6,6 @@
 
 Le projet Draw++ a pour objectif de concevoir un langage de programmation spécifique permettant de dessiner des formes géométriques à l’écran à partir d’instructions définies. Le langage inclut un répertoire d'instructions élémentaires et évoluées, ainsi qu'un environnement de développement intégré (IDE) pour faciliter la création, l'édition et l'exécution de programmes écrits en Draw++.
 
-# Instruction de lancement
-
-Pour installer la bibliothèque SDL2 :
-`sudo apt-get update`
-`sudo apt-get install libsdl2-dev`
-
-Pour lancer le programme :
-`python3 main.py`
-
 
 # Fonctionnalités Principales
 
