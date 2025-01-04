@@ -1,9 +1,9 @@
 Instructions élémentaires : 
 
 Créer un curseur : 
-create_cursor -> create_cursor C at x , y
-      exemple : create_cursor C1 at 10 15    
-      (Créer un curseur nommé C1 au point d'abcisse 10 et d'ordonnée 15)
+create_cursor -> create_cursor C (x,y)
+      exemple : create_cursor C1 (150,100)   
+      (Créer un curseur nommé C1 au point d'abcisse 150 et d'ordonnée 100)
 
 Montrer un curseur : 
 show_cursor -> show_cursor C => par défaut le curseur est visible
@@ -15,65 +15,69 @@ hide_cursor -> hide_cursor C
       exemple : hide_cursor C1
       (Cacher le curseur C1)
 
+Faire avancer un curseur (saut) :
+move_cursor -> move_cursor C (x,y)
+      exemple : move_cursor C1 (100,150)
+      (Déplacer le curseur C1 au point d'abcisse 100 et d'ordonnée 150)
+
+Faire pivoter un curseur : 
+rotate_cursor -> rotate_cursor C x (=> par défaut le curseur pointe vers le haut et va pivoter vers la droite)
+      exemple : rotate_cursor C1 90
+      (Faire pivoter le curseur C1 de 90 degrés)
+
 Changer la couleur du curseur :
-color_cursor -> color_cursor C to R,G,B
-      ewemple : color_cursor C1 to 255,0,0
+color_cursor -> color_cursor C (R,G,B)
+      ewemple : color_cursor C1 (255,0,0)
       (Changer la couleur du curseur C1 en rouge)
 
 Changer l'épaisseur du curseur : 
-thickness_cursor -> thickness_cursor C to (au choix 1,2,3,4,5) => les épaisseurs sont prédéfinies
-    exemple : thickness_cursor C1 to 4
+thickness_cursor -> thickness_cursor C (1 or 2 or 3 or 4 or 5) => les épaisseurs sont prédéfinies
+    exemple : thickness_cursor C1 4
     (Changer l'épaisseur du curseur C1 pour l'épaisseur 4) 
 
-Faire avancer un curseur (saut) :
-move_cursor -> move_cursor C at x , y
-      exemple : move_cursor C1 at 15,10
-      (Déplacer le curseur C1 au point d'abcisse 15 et d'ordonnée 10)
 
-Faire pivoter un curseur : 
-rotate_cursor -> rotate_cursor C to x => par défaut le curseur pointe vers le haut et va pivoter vers la droite
-      exemple : rotate_cursor C1 to 90
-      (Faire pivoter le curseur C1 de 90 degrés)
 
 Dessiner une ligne : 
-draw_line -> C draw_line x
-      exemple : C1 draw_line 20
+draw_line -> draw_line C x
+      exemple : draw_line C1 20
       (A partir du curseur C1 dessiner une ligne de 20 pixels)
 
 Dessiner un rectangle : 
-draw_rectangle -> C draw_rectangle x,y => par défaut les angles se feront vers la droite
-      exemple : C1 draw_rectangle 20,15
+draw_rectangle -> draw_rectangle c x,y => par défaut les angles se feront vers la droite
+      exemple : draw_rectangle C1 (20,15)
       (A partir du curseur C1 dessiner un rectangle de longueur 20 pixels et de largeur 15 pixels)
 
 Dessiner un carré : 
-draw_square -> C draw_square x => par défaut les angles se feront vers la droite
-      exemple : C1 draw_square 20
+draw_square -> draw_square C x => par défaut les angles se feront vers la droite
+      exemple : draw_square C1 20
       (A partir du curseur C1 dessiner un carré de coté 20 pixels)
 
 Dessiner un cercle : 
-draw_circle -> C draw_circle x
-      exemple : C1 draw_circle 20
+draw_circle -> draw_circle C x
+      exemple : draw_circle C1 20
       (A partir du curseur C1 dessiner un cercle de rayon 20 pixels)
 
 Dessiner un arc : 
-draw_arc -> C draw_arc x , y / a , b 
-      exemple : C1 draw_arc 10,15 / 15,10 
-      (A partir du curseur C1 dessiner un arc de cercle qui ira du point d'abcisse 10 et d'ordonnée 15 jusqu'au point d'abcisse 15 et d'ordonnée 10)
+draw_arc -> draw_arc C R a b 
+      exemple : draw_arc C1 15 60 90 
+      (A partir du curseur C1 dessiner un arc de cercle de rayon 15 avec pour angle de départ 60 degrés et pour angle de fin 90 degrés)
 
 Dessiner une ellipse : 
-draw_ellipse -> C draw_ellipse x , y
-      exemple : C1 draw_ellipse 10,15
+draw_ellipse -> draw_ellipse C (x , y)
+      exemple : draw_ellipse C1 (10,15)
       (A partir du curseur C1 dessiner un ellipse avec comme axe mineur 10 et axe majeur 15)
 
 Dessiner une étoile :
-draw_star -> C draw_star x in y
-            exemple : C1 draw_star 5 in 10
+draw_star -> draw_star c x y
+            exemple : draw_star C1 5 10
             (A partir du curseur C1 dessiner une étoile avec 5 branches de chacunes 10 pixels)
 
 Remplir une forme :
-fill_shape -> C fill_shape shape to R , G , B =>il faut que le curseur soit dans la forme 
-            exemple : C1 fill_shape square in 255,0,0
+fill_shape -> fill_shape C (R , G , B) =>il faut que le curseur soit dans la forme 
+            exemple : fill_shape C (255,0,0)
             (A partir de la localisation du curseur C1 remplir le carré en rouge)
+
+
 
 Animer une forme : 
 animate -> C animate shape animation =>il faut determiner les animations proposées et la vitesse
@@ -85,7 +89,7 @@ Instructions évoluées :
 
 Assigner des valeurs à des variables :
 let_var = valeur
-		exemple : let size = 10
+		exemple : let_size = 10
 		(Affecter la valeur 10 à la variable size)
 		
 Instruction de bloc : 
