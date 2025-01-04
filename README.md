@@ -9,11 +9,11 @@ Le projet Draw++ a pour objectif de concevoir un langage de programmation spéci
 # Instruction de lancement
 
 Pour installer la bibliothèque SDL2 :
-sudo apt-get update
-sudo apt-get install libsdl2-dev
+`sudo apt-get update`
+`sudo apt-get install libsdl2-dev`
 
 Pour lancer le programme :
-python3 main.py
+`python3 main.py`
 
 
 # Fonctionnalités Principales
