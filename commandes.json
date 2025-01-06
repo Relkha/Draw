@@ -1,0 +1,170 @@
+{
+    "commands": {
+        "create_cursor nameofcurseur (valueofx,valueofy)": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "RPAREN"
+            ]
+        },
+        "move_cursor nameofcurseur (valueofx,valeurdey)": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "RPAREN"
+            ]
+        },
+        "show_cursor nameofcurseur": {
+            "args": [
+                "IDENTIFIER"
+            ]
+        },
+        "hide_cursor nameofcurseur": {
+            "args": [
+                "IDENTIFIER"
+            ]
+        },
+        "rotate_cursor nameofcurseur value": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER"
+            ]
+        },
+        "color_cursor nameofcurseur (R,G,B)": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "RPAREN"
+            ]
+        },
+        "thickness_cursor nameofcurseur value": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER"
+            ]
+        },
+        "draw_line nameofcurseur value": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER"
+            ]
+        },
+        "draw_rectangle nameofcurseur (length,width)": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "RPAREN"
+            ]
+        },
+        "draw_square nameofcurseur value": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER"
+            ]
+        },
+        "draw_circle nameofcurseur radius": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER"
+            ]
+        },
+        "draw_arc nameofcurseur radius startangle endangle": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER",
+                "NUMBER",
+                "NUMBER"
+            ]
+        },
+        "draw_ellipse nameofcurseur (minoraxis,majoraxis)": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "RPAREN"
+            ]
+        },
+        "draw_star nameofcurseur numberbranches value": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER",
+                "NUMBER"
+            ]
+        },
+        "fill_shape nameofcurseur (R,G,B)": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "COMMA",
+                "NUMBER",
+                "RPAREN"
+            ]
+        }
+    },
+    "conditionals": {
+        "if(shape) : ": {
+            "args": [
+                "LPAREN",
+                "SHAPE",
+                "RPAREN",
+                "COLON"
+            ],
+            "block": true
+        },
+        "else": {
+            "args": [
+                "COLON"
+            ],
+            "block": true
+        }
+    },
+    "loops": {
+        "repeat (value) {}": {
+            "args": [
+                "LPAREN",
+                "NUMBER",
+                "RPAREN",
+                "COLON"
+            ],
+            "block": true
+        }
+    },
+    "function": {
+        "def name {}": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "RPAREN"
+            ]
+        }
+    },
+    "shapes": [
+        "cursor",
+        "line",
+        "rectangle",
+        "square",
+        "circle",
+        "arc",
+        "ellipse",
+        "star"
+    ]
+}
