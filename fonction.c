@@ -6,6 +6,27 @@
 #define MAX_CURSORS 100
 #define MAX_LINES 100
 #define PI 3.14159265358979323846
+#define MAX_SHAPES 100
+
+typedef enum {
+    SHAPE_CIRCLE,
+    SHAPE_ELLIPSE,
+    SHAPE_ARC,
+    SHAPE_STAR
+} ShapeType;
+
+typedef struct {
+    ShapeType type;
+    int x, y;         // Position du centre
+    int param1, param2; // Paramètres spécifiques (rayon, largeur, hauteur, etc.)
+    int start_angle, end_angle; // Angles pour les arcs
+    int r, g, b;      // Couleur
+    int branches;     // Branches (étoiles uniquement)
+} Shape;
+
+Shape shapes[MAX_SHAPES];
+int shape_count = 0;
+
 
 typedef struct {
     char name[50];
@@ -68,8 +89,8 @@ Cursor* find_cursor(const char* name) {
 
 void update_screen() {
     // Effacer l'écran (fond blanc)
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Fond blanc
-    SDL_RenderClear(renderer); 
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
 
     // Dessiner toutes les lignes stockées
     for (int i = 0; i < line_count; i++) {
@@ -81,8 +102,57 @@ void update_screen() {
     for (int i = 0; i < cursor_count; i++) {
         if (cursors[i].visible) {
             SDL_SetRenderDrawColor(renderer, cursors[i].r, cursors[i].g, cursors[i].b, 255);
-            SDL_Rect rect = { cursors[i].x - 5, cursors[i].y - 5, 10, 10 };
+            int half_thickness = cursors[i].thickness / 2;
+            SDL_Rect rect = {cursors[i].x - half_thickness, cursors[i].y - half_thickness, cursors[i].thickness, cursors[i].thickness};
             SDL_RenderFillRect(renderer, &rect);
+        }
+    }
+
+    // Dessiner toutes les formes stockées
+    for (int i = 0; i < shape_count; i++) {
+        SDL_SetRenderDrawColor(renderer, shapes[i].r, shapes[i].g, shapes[i].b, 255);
+        switch (shapes[i].type) {
+            case SHAPE_CIRCLE:
+                for (int angle = 0; angle < 360; angle++) {
+                    int x = shapes[i].x + shapes[i].param1 * cos(angle * PI / 180.0);
+                    int y = shapes[i].y - shapes[i].param1 * sin(angle * PI / 180.0);
+                    SDL_RenderDrawPoint(renderer, x, y);
+                }
+                break;
+            case SHAPE_ARC:
+                for (int angle = shapes[i].start_angle; angle <= shapes[i].end_angle; angle++) {
+                    int x = shapes[i].x + shapes[i].param1 * cos(angle * PI / 180.0);
+                    int y = shapes[i].y - shapes[i].param1 * sin(angle * PI / 180.0);
+                    SDL_RenderDrawPoint(renderer, x, y);
+                }
+                break;
+            case SHAPE_ELLIPSE:
+                for (int angle = 0; angle < 360; angle++) {
+                    int x = shapes[i].x + shapes[i].param1 * cos(angle * PI / 180.0);
+                    int y = shapes[i].y - shapes[i].param2 * sin(angle * PI / 180.0);
+                    SDL_RenderDrawPoint(renderer, x, y);
+                }
+                break;
+            case SHAPE_STAR:
+                double angle_step = PI / shapes[i].branches; // Angle entre les branches
+                int x_center = shapes[i].x;
+                int y_center = shapes[i].y;
+
+                int x_prev = x_center + shapes[i].param1 * cos(0);
+                int y_prev = y_center - shapes[i].param1 * sin(0);
+
+                for (int j = 1; j <= 2 * shapes[i].branches; j++) {
+                double angle = j * angle_step;
+                int length = (j % 2 == 0) ? shapes[i].param1 : shapes[i].param1 / 2; // Alternance entre grande et petite branche
+                int x_next = x_center + length * cos(angle);
+                int y_next = y_center - length * sin(angle);
+
+                SDL_RenderDrawLine(renderer, x_prev, y_prev, x_next, y_next);
+
+                x_prev = x_next;
+                y_prev = y_next;
+    }
+                break;
         }
     }
 
@@ -105,7 +175,7 @@ void create_cursor(const char* name, int x, int y) {
     new_cursor.r = 0;
     new_cursor.g = 0;
     new_cursor.b = 0;
-    new_cursor.thickness = 1;
+    new_cursor.thickness = 10;
     new_cursor.visible = 1;
     new_cursor.angle = 0.0; // Angle initial = 0° (orienté vers la droite)
 
@@ -222,7 +292,9 @@ void thickness_cursor(const char* name, int thickness) {
     }
     cursor->thickness = thickness;
     printf("Épaisseur du curseur %s définie à %d.\n", name, thickness);
+    update_screen();
 }
+
 
 // Dessiner un rectangle
 void draw_rectangle(const char* name, int width, int height) {
@@ -262,14 +334,15 @@ void draw_circle(const char* name, int radius) {
         return;
     }
 
-    for (int angle = 0; angle < 360; angle++) {
-        int x = cursor->x + radius * cos(angle * PI / 180.0);
-        int y = cursor->y - radius * sin(angle * PI / 180.0);
-        SDL_SetRenderDrawColor(renderer, cursor->r, cursor->g, cursor->b, 255);
-        SDL_RenderDrawPoint(renderer, x, y);
+    // Ajouter le cercle au tableau
+    if (shape_count < MAX_SHAPES) {
+        shapes[shape_count++] = (Shape){SHAPE_CIRCLE, cursor->x, cursor->y, radius, 0, 0, 0, cursor->r, cursor->g, cursor->b, 0};
+    } else {
+        printf("Erreur : Nombre maximal de formes atteint.\n");
     }
-    SDL_RenderPresent(renderer);
-    printf("Cercle dessiné avec un rayon de %d.\n", radius);
+
+    update_screen(); // Redessiner tout
+    printf("Cercle ajouté avec un rayon de %d.\n", radius);
 }
 
 // Dessiner un arc
@@ -280,15 +353,17 @@ void draw_arc(const char* name, int radius, int start_angle, int end_angle) {
         return;
     }
 
-    float angle_step = 1.0; 
-    for (float angle = start_angle; angle <= end_angle; angle += angle_step) {
-        int x = cursor->x + (int)(radius * cos(angle * PI / 180.0));
-        int y = cursor->y - (int)(radius * sin(angle * PI / 180.0));
-        SDL_SetRenderDrawColor(renderer, cursor->r, cursor->g, cursor->b, 255);
-        SDL_RenderDrawPoint(renderer, x, y);
+    // Ajouter l'arc au tableau
+    if (shape_count < MAX_SHAPES) {
+        shapes[shape_count++] = (Shape){SHAPE_ARC, cursor->x, cursor->y, radius, 0, start_angle, end_angle, cursor->r, cursor->g, cursor->b, 0};
+    } else {
+        printf("Erreur : Nombre maximal de formes atteint.\n");
     }
-    SDL_RenderPresent(renderer);
+
+    update_screen(); // Redessiner tout
+    printf("Arc ajouté avec un rayon de %d, de %d° à %d°.\n", radius, start_angle, end_angle);
 }
+
 
 // Dessiner une ellipse
 void draw_ellipse(const char* name, int width, int height) {
@@ -298,14 +373,28 @@ void draw_ellipse(const char* name, int width, int height) {
         return;
     }
 
-    for (int angle = 0; angle < 360; angle++) {
-        int x = cursor->x + width * cos(angle * PI / 180.0);
-        int y = cursor->y - height * sin(angle * PI / 180.0);
-        SDL_SetRenderDrawColor(renderer, cursor->r, cursor->g, cursor->b, 255);
-        SDL_RenderDrawPoint(renderer, x, y);
+    // Ajouter l'ellipse au tableau
+    if (shape_count < MAX_SHAPES) {
+        shapes[shape_count++] = (Shape){
+            SHAPE_ELLIPSE,    // Type de la forme
+            cursor->x,        // Position du centre
+            cursor->y,        // Position du centre
+            width,            // Largeur (rayon horizontal)
+            height,           // Hauteur (rayon vertical)
+            0,                // Début d'angle inutilisé
+            0,                // Fin d'angle inutilisé
+            cursor->r,        // Couleur rouge
+            cursor->g,        // Couleur verte
+            cursor->b,        // Couleur bleue
+            0                 // Branches inutilisé
+        };
+    } else {
+        printf("Erreur : Nombre maximal de formes atteint.\n");
+        return;
     }
-    SDL_RenderPresent(renderer);
-    printf("Ellipse dessinée avec largeur %d et hauteur %d.\n", width, height);
+
+    update_screen(); // Redessiner tout
+    printf("Ellipse ajoutée avec largeur %d et hauteur %d.\n", width, height);
 }
 
 // Dessiner une étoile
@@ -316,28 +405,30 @@ void draw_star(const char* name, int branches, int size) {
         return;
     }
 
-    double angle_step = PI / branches;
-    int x_center = cursor->x;
-    int y_center = cursor->y;
-
-    int x_prev = x_center + size * cos(0);
-    int y_prev = y_center - size * sin(0);
-
-    for (int i = 1; i <= 2 * branches; i++) {
-        double angle = i * angle_step;
-        int length = (i % 2 == 0) ? size : size / 2;
-        int x_next = x_center + length * cos(angle);
-        int y_next = y_center - length * sin(angle);
-
-        SDL_SetRenderDrawColor(renderer, cursor->r, cursor->g, cursor->b, 255);
-        SDL_RenderDrawLine(renderer, x_prev, y_prev, x_next, y_next);
-
-        x_prev = x_next;
-        y_prev = y_next;
+    // Ajouter l'étoile au tableau
+    if (shape_count < MAX_SHAPES) {
+        shapes[shape_count++] = (Shape){
+            SHAPE_STAR,       // Type de la forme
+            cursor->x,        // Position du centre
+            cursor->y,        // Position du centre
+            size,             // Taille (longueur des branches)
+            0,                // Paramètre inutilisé
+            0,                // Début d'angle inutilisé
+            0,                // Fin d'angle inutilisé
+            cursor->r,        // Couleur rouge
+            cursor->g,        // Couleur verte
+            cursor->b,        // Couleur bleue
+            branches          // Nombre de branches
+        };
+    } else {
+        printf("Erreur : Nombre maximal de formes atteint.\n");
+        return;
     }
 
-    SDL_RenderPresent(renderer);
+    update_screen(); // Redessiner tout
+    printf("Étoile ajoutée avec %d branches et taille %d.\n", branches, size);
 }
+
 
 
 
