@@ -5,10 +5,10 @@
 int main() {
     initialize_graphics();  // Initialisation de la fenêtre et du renderer
     create_cursor("C", 200, 100);
-    draw_ellipse("C", 50, 100);
     color_cursor("C", 200, 190, 20);
-    move_cursor("C", 200, 200);
-    draw_ellipse("C", 50, 100);
+    draw_line("C", 100);
+    move_cursor("C", 100, 50);
+    thickness_cursor("C", 30);
     SDL_Event event;
     int running = 1;
     while (running) {
