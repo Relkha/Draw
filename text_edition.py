@@ -426,10 +426,10 @@ def extract_command_data(tokens):
             'g': int(tokens[5][1]),
             'b': int(tokens[7][1])
         }
-    else:
         print(f"Erreur : commande non reconnue ou syntaxe incorrecte pour les tokens : {tokens}")
 
     return command_data
+
 
 
 # Fonction pour exécuter les commandes de dessin

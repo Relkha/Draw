@@ -4,11 +4,11 @@
 
 int main() {
     initialize_graphics();  // Initialisation de la fenêtre et du renderer
-    create_cursor("C", 200, 100);
-    color_cursor("C", 200, 190, 20);
+    create_cursor("C", 100, 200);
     draw_line("C", 100);
-    move_cursor("C", 100, 50);
+    rotate_cursor("C", 90);
     thickness_cursor("C", 30);
+    draw_line("C", 100);
     SDL_Event event;
     int running = 1;
     while (running) {

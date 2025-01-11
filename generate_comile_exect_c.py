@@ -31,6 +31,7 @@ def generate_command_code(command):
         return f'draw_ellipse("{command["name"]}", {command["width"]}, {command["height"]});'
     elif command['command'] == 'draw_star':
         return f'draw_star("{command["name"]}", {command["branches"]}, {command["size"]});'
+
     else:
         return None  # Pour les commandes non reconnues
 

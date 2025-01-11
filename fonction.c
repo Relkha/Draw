@@ -40,7 +40,8 @@ typedef struct {
 typedef struct {
     int x_start, y_start;
     int x_end, y_end;
-    int r, g, b;      // Couleur de la ligne
+    int r, g, b;    // Couleur de la ligne
+    int thickness;
 } Line;
 
 Cursor cursors[MAX_CURSORS];
@@ -88,27 +89,69 @@ Cursor* find_cursor(const char* name) {
 }
 
 void update_screen() {
-    // Effacer l'écran (fond blanc)
+    // Effacer l'écran avec un fond blanc
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
-    // Dessiner toutes les lignes stockées
+    // Dessiner toutes les lignes stockées avec une largeur réduite et centrée
     for (int i = 0; i < line_count; i++) {
         SDL_SetRenderDrawColor(renderer, lines[i].r, lines[i].g, lines[i].b, 255);
-        SDL_RenderDrawLine(renderer, lines[i].x_start, lines[i].y_start, lines[i].x_end, lines[i].y_end);
+
+        // Réduire la largeur de la ligne pour qu'elle reste petite
+        int reduced_thickness = lines[i].thickness / 5;
+        int half_reduced_thickness = reduced_thickness / 2;
+
+        if (lines[i].x_start == lines[i].x_end) {
+            // Ligne verticale centrée
+            SDL_Rect rect = {
+                lines[i].x_start - half_reduced_thickness, 
+                (lines[i].y_start < lines[i].y_end ? lines[i].y_start : lines[i].y_end),
+                reduced_thickness, // Largeur réduite
+                abs(lines[i].y_end - lines[i].y_start)
+            };
+            SDL_RenderFillRect(renderer, &rect);
+        } else if (lines[i].y_start == lines[i].y_end) {
+            // Ligne horizontale centrée
+            SDL_Rect rect = {
+                (lines[i].x_start < lines[i].x_end ? lines[i].x_start : lines[i].x_end),
+                lines[i].y_start - half_reduced_thickness, // Centrer verticalement
+                abs(lines[i].x_end - lines[i].x_start),
+                reduced_thickness // Hauteur réduite
+            };
+            SDL_RenderFillRect(renderer, &rect);
+        } else {
+            // Ligne inclinée (approximation par points avec largeur réduite et centrée)
+            float dx = lines[i].x_end - lines[i].x_start;
+            float dy = lines[i].y_end - lines[i].y_start;
+            float length = sqrt(dx * dx + dy * dy);
+            float ux = dx / length, uy = dy / length;
+
+            for (int offset = -half_reduced_thickness; offset <= half_reduced_thickness; offset++) {
+                for (int j = 0; j < length; j++) {
+                    int x = lines[i].x_start + j * ux - offset * uy;
+                    int y = lines[i].y_start + j * uy + offset * ux;
+                    SDL_RenderDrawPoint(renderer, x, y);
+                }
+            }
+        }
     }
 
-    // Dessiner les curseurs
+    // Dessiner tous les curseurs visibles
     for (int i = 0; i < cursor_count; i++) {
         if (cursors[i].visible) {
+            // Dessiner le curseur lui-même
             SDL_SetRenderDrawColor(renderer, cursors[i].r, cursors[i].g, cursors[i].b, 255);
-            int half_thickness = cursors[i].thickness / 2;
-            SDL_Rect rect = {cursors[i].x - half_thickness, cursors[i].y - half_thickness, cursors[i].thickness, cursors[i].thickness};
+            SDL_Rect rect = {
+                cursors[i].x - cursors[i].thickness / 2, 
+                cursors[i].y - cursors[i].thickness / 2, 
+                cursors[i].thickness, 
+                cursors[i].thickness
+            };
             SDL_RenderFillRect(renderer, &rect);
         }
     }
 
-    // Dessiner toutes les formes stockées
+    // Dessiner toutes les formes géométriques stockées
     for (int i = 0; i < shape_count; i++) {
         SDL_SetRenderDrawColor(renderer, shapes[i].r, shapes[i].g, shapes[i].b, 255);
         switch (shapes[i].type) {
@@ -119,6 +162,7 @@ void update_screen() {
                     SDL_RenderDrawPoint(renderer, x, y);
                 }
                 break;
+
             case SHAPE_ARC:
                 for (int angle = shapes[i].start_angle; angle <= shapes[i].end_angle; angle++) {
                     int x = shapes[i].x + shapes[i].param1 * cos(angle * PI / 180.0);
@@ -126,6 +170,7 @@ void update_screen() {
                     SDL_RenderDrawPoint(renderer, x, y);
                 }
                 break;
+
             case SHAPE_ELLIPSE:
                 for (int angle = 0; angle < 360; angle++) {
                     int x = shapes[i].x + shapes[i].param1 * cos(angle * PI / 180.0);
@@ -133,25 +178,28 @@ void update_screen() {
                     SDL_RenderDrawPoint(renderer, x, y);
                 }
                 break;
+
             case SHAPE_STAR:
-                double angle_step = PI / shapes[i].branches; // Angle entre les branches
-                int x_center = shapes[i].x;
-                int y_center = shapes[i].y;
+                {
+                    double angle_step = PI / shapes[i].branches;
+                    int x_center = shapes[i].x;
+                    int y_center = shapes[i].y;
 
-                int x_prev = x_center + shapes[i].param1 * cos(0);
-                int y_prev = y_center - shapes[i].param1 * sin(0);
+                    int x_prev = x_center + shapes[i].param1 * cos(0);
+                    int y_prev = y_center - shapes[i].param1 * sin(0);
 
-                for (int j = 1; j <= 2 * shapes[i].branches; j++) {
-                double angle = j * angle_step;
-                int length = (j % 2 == 0) ? shapes[i].param1 : shapes[i].param1 / 2; // Alternance entre grande et petite branche
-                int x_next = x_center + length * cos(angle);
-                int y_next = y_center - length * sin(angle);
+                    for (int j = 1; j <= 2 * shapes[i].branches; j++) {
+                        double angle = j * angle_step;
+                        int length = (j % 2 == 0) ? shapes[i].param1 : shapes[i].param1 / 2;
+                        int x_next = x_center + length * cos(angle);
+                        int y_next = y_center - length * sin(angle);
 
-                SDL_RenderDrawLine(renderer, x_prev, y_prev, x_next, y_next);
+                        SDL_RenderDrawLine(renderer, x_prev, y_prev, x_next, y_next);
 
-                x_prev = x_next;
-                y_prev = y_next;
-    }
+                        x_prev = x_next;
+                        y_prev = y_next;
+                    }
+                }
                 break;
         }
     }
@@ -159,6 +207,8 @@ void update_screen() {
     // Afficher le rendu final
     SDL_RenderPresent(renderer);
 }
+
+
 
 
 // Création d'un curseur
@@ -218,9 +268,9 @@ void draw_line(const char* name, int length) {
     int x_end = x_start + (int)(cos(angle_rad) * length);
     int y_end = y_start - (int)(sin(angle_rad) * length);
 
-    // Ajouter la ligne au tableau
+    // Ajouter la ligne au tableau avec l'épaisseur du curseur
     if (line_count < MAX_LINES) {
-        lines[line_count++] = (Line){x_start, y_start, x_end, y_end, cursor->r, cursor->g, cursor->b};
+        lines[line_count++] = (Line){x_start, y_start, x_end, y_end, cursor->r, cursor->g, cursor->b, cursor->thickness};
     } else {
         printf("Erreur : Nombre maximal de lignes atteint.\n");
     }
@@ -232,7 +282,7 @@ void draw_line(const char* name, int length) {
     // Mise à jour de l'écran
     update_screen();
 
-    printf("Ligne dessinée depuis (%d, %d) jusqu'à (%d, %d).\n", x_start, y_start, x_end, y_end);
+    printf("Ligne dessinée depuis (%d, %d) jusqu'à (%d, %d), épaisseur : %d.\n", x_start, y_start, x_end, y_end, cursor->thickness);
 }
 
 // Afficher un curseur
