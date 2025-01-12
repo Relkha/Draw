@@ -12,6 +12,9 @@ Pour installer tkinter :
 `sudo apt update`
 `sudo apt install python3-tk -y`
 
+Pour installer gcc : 
+`sudo apt update`
+`sudo apt install build-essential`
 
 Pour installer la bibliothèque SDL2 :
 `sudo apt-get update`
