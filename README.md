@@ -4,7 +4,9 @@
 
 # Project Description
 
-Draw++ est un langage simple et intuitif conçu spécialement pour le dessin. Grâce à lui, il est possible de créer des formes géométriques comme des cercles, des rectangles ou des carrés en écrivant des commandes spécifiques. Ces commandes permettent aussi d’ajouter des paramètres tels que la position, la couleur ou l’épaisseur des formes. Pour faciliter son utilisation, un éditeur interactif a été développé. Cet éditeur est capable d’analyser, de corriger et d’exécuter les commandes en temps réel, offrant ainsi une expérience fluide et accessible.
+Draw++ is a simple and intuitive language designed specifically for drawing. It allows users to create geometric shapes like circles, rectangles, or squares by writing specific commands. These commands can include parameters such as position, color, or shape thickness. To enhance usability, an interactive editor has been developed. This editor can analyze, correct, and execute commands in real time, offering a smooth and user-friendly experience.
+
+
 
 # Launch Instructions
 
@@ -32,10 +34,15 @@ Start the Program :
 # Basic Commands : 
 
 Create Cursor: create_cursor(name, x, y) – Creates a cursor at position (x, y).
+
 Move Cursor: move_cursor(name, x, y) – Moves a cursor to position (x, y).
+
 Show/Hide Cursor: show_cursor(name) or hide_cursor(name) – Makes a cursor visible or hides it.
+
 Rotate Cursor: rotate_cursor(name, angle) – Rotates the cursor by angle degrees.
+
 Set Thickness: thickness_cursor(name, thickness) – Sets the line thickness for the cursor.
+
 Set Color: color_cursor(name, r, g, b) – Sets the color (r, g, b) for the cursor.
 
 # Drawing Commands : 
