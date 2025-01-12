@@ -76,55 +76,17 @@ Functions: Custom blocks of reusable commands.
 
 The Draw++ Integrated Development Environment (IDE) is a powerful, user-friendly tool that simplifies the process of creating, editing, and running Draw++ programs. Its features include:
 
+- Open, create, and manage multiple files in separate tabs.
+- Rename tabs for better organization.
+- Easily revert or reapply changes to your code.
+- Toggle between dark mode for comfortable nighttime use and light mode for daytime.
+- Access built-in documentation directly from the IDE, providing explanations and examples of all commands.
 
-Tabbed File Management:
+- Highlights commands, conditionals, loops, functions, and variables with distinct colors.
+- Provides instant feedback on errors with red underlines.
 
-Open, create, and manage multiple files in separate tabs.
-Rename tabs for better organization.
-Autosave and manual save options ensure your work is not lost.
-
-
-Real-Time Syntax Highlighting:
-
-Highlights commands, conditionals, loops, functions, and variables with distinct colors.
-Provides instant feedback on errors with red underlines.
-
-
-Interactive Command Validation:
-
-Validates syntax as you type, marking valid and invalid lines.
-Detects missing parameters or incorrect command usage.
-
-
-Code Execution:
-
-Runs your Draw++ code and displays the results in a graphical window.
-Supports real-time rendering of shapes, lines, and other elements.
-
-
-Undo/Redo Functionality:
-
-Easily revert or reapply changes to your code.
-
-
-Dark and Light Modes:
-
-Toggle between dark mode for comfortable nighttime use and light mode for daytime.
-
-
-Error Management:
-
-Errors in your code are highlighted for quick fixes.
-
-
-Interactive Documentation:
-
-Access built-in documentation directly from the IDE, providing explanations and examples of all commands.
-
-
-Auto-completion:
-
-Predicts and completes commands as you type, speeding up coding and reducing errors.
+- Predicts and completes commands as you type, speeding up coding and reducing errors.
+- Runs your Draw++ code and displays the results in a graphical window.
 
 
 
@@ -147,12 +109,12 @@ SMAILI Adel ;
 
 
 
-# Aide : Pour deposer des modifications depuis un depot local :
-1. Avant le `add` toujours faire un `git pull` pour ne pas écraser le travail des autres.
-2. `git add .`
-3. `git commit -m "Message décrivant les modifications"`
-4. Avant le `git push origin main`, toujours faire validé ces modifs en testant et par l'équipe.
-5. `git push origin main`
+# Help : How to Submit Changes from a Local Repository :
+1. Always perform a `git pull` before `git add` to avoid overwriting others' work.
+2. Use `git add .` to stage all changes.
+3. Commit your changes with a descriptive message : `git commit -m "Message describing the changes"`
+4. Before pushing to the main branch, test your changes and have them reviewed by the team.
+5. Push your changes : `git push origin main`
 
 
 
