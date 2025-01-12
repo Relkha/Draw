@@ -1,0 +1,211 @@
+{
+    "commands": {
+        "var": {
+            "args": [
+                "VARIABLE",
+                "EQUALS",
+                "NUMBER"
+            ]
+        },
+        "create_cursor": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "RPAREN"
+            ]
+        },
+        "move_cursor": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "RPAREN"
+            ]
+        },
+        "show_cursor": {
+            "args": [
+                "IDENTIFIER"
+            ]
+        },
+        "hide_cursor": {
+            "args": [
+                "IDENTIFIER"
+            ]
+        },
+        "rotate_cursor": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER_OR_VARIABLE"
+            ]
+        },
+        "color_cursor": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "RPAREN"
+            ],
+            "constraints": {
+                "args": {
+                    "NUMBER": {
+                        "min": 0,
+                        "max": 255
+                    }
+                }
+            }
+        },
+        "thickness_cursor": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER_OR_VARIABLE"
+            ]
+        },
+        "draw_line": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER_OR_VARIABLE"
+            ]
+        },
+        "draw_rectangle": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "RPAREN"
+            ]
+        },
+        "draw_square": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER_OR_VARIABLE"
+            ]
+        },
+        "draw_circle": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER_OR_VARIABLE"
+            ]
+        },
+        "draw_arc": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER_OR_VARIABLE",
+                "NUMBER_OR_VARIABLE",
+                "NUMBER_OR_VARIABLE"
+            ]
+        },
+        "draw_ellipse": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "RPAREN"
+            ]
+        },
+        "draw_star": {
+            "args": [
+                "IDENTIFIER",
+                "NUMBER_OR_VARIABLE",
+                "NUMBER_OR_VARIABLE"
+            ]
+        },
+        "fill_shape": {
+            "args": [
+                "IDENTIFIER",
+                "LPAREN",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "COMMA",
+                "NUMBER_OR_VARIABLE",
+                "RPAREN"
+            ]
+        }
+    },
+    "conditionals": {
+        "if": {
+            "args": [
+                "LPAREN",
+                "CONDITION",
+                "RPAREN",
+                "LBRACE",
+                "block_content",
+                "RBRACE"
+            ],
+            "block": true
+        },
+        "else": {
+            "args": [
+                "LBRACE",
+                "block_content",
+                "RBRACE"
+            ],
+            "block": true
+        }
+    },
+    "loops": {
+        "repeat": {
+            "args": [
+                "LPAREN",
+                "NUMBER_OR_VARIABLE",
+                "RPAREN",
+                "LBRACE",
+                "block_content",
+                "RBRACE"
+            ],
+            "block": true
+        }
+    },
+    "shapes": [
+        "line",
+        "circle",
+        "rectangle",
+        "square",
+        "ellipse",
+        "arc",
+        "star"
+    ],
+    "condition": {
+        "CONDITION": {
+            "type": "CHOICE",
+            "options": [
+                {
+                    "pattern": "[a-zA-Z]\\s*(<|>|=)\\s*\\d+"
+                },
+                {
+                    "type": "SHAPE"
+                }
+            ]
+        }
+    },
+    "block_content": {
+        "type": [
+            "commands",
+            "loops",
+            "conditionals"
+        ]
+    },
+    "function": {
+        "def": {
+            "args": [
+                "IDENTIFIER",
+                "LBRACE",
+                "block_content",
+                "RBRACE"
+            ]
+        }
+    }
+}
