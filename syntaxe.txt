@@ -1,0 +1,115 @@
+Instructions élémentaires : 
+
+Créer un curseur : 
+create_cursor -> create_cursor C (x,y)
+      exemple : create_cursor C1 (150,100)   
+      (Créer un curseur nommé C1 au point d'abcisse 150 et d'ordonnée 100)
+
+Montrer un curseur : 
+show_cursor -> show_cursor C => par défaut le curseur est visible
+      exemple : show_cursor C1
+      (Montrer le curseur C1)
+
+Cacher un curseur : 
+hide_cursor -> hide_cursor C 
+      exemple : hide_cursor C1
+      (Cacher le curseur C1)
+
+Faire avancer un curseur (saut) :
+move_cursor -> move_cursor C (x,y)
+      exemple : move_cursor C1 (100,150)
+      (Déplacer le curseur C1 au point d'abcisse 100 et d'ordonnée 150)
+
+Faire pivoter un curseur : 
+rotate_cursor -> rotate_cursor C x (=> par défaut le curseur pointe vers le haut et va pivoter vers la droite)
+      exemple : rotate_cursor C1 90
+      (Faire pivoter le curseur C1 de 90 degrés)
+
+Changer la couleur du curseur :
+color_cursor -> color_cursor C (R,G,B)
+      exemple : color_cursor C1 (255,0,0)
+      (Changer la couleur du curseur C1 en rouge)
+
+Changer l'épaisseur du curseur : 
+thickness_cursor -> thickness_cursor C (1 or 2 or 3 or 4 or 5) => les épaisseurs sont prédéfinies
+    exemple : thickness_cursor C1 4
+    (Changer l'épaisseur du curseur C1 pour l'épaisseur 4) 
+
+
+
+Dessiner une ligne : 
+draw_line -> draw_line C x
+      exemple : draw_line C1 20
+      (A partir du curseur C1 dessiner une ligne de 20 pixels)
+
+Dessiner un rectangle : 
+draw_rectangle -> draw_rectangle c x,y => par défaut les angles se feront vers la droite
+      exemple : draw_rectangle C1 (20,15)
+      (A partir du curseur C1 dessiner un rectangle de longueur 20 pixels et de largeur 15 pixels)
+
+Dessiner un carré : 
+draw_square -> draw_square C x => par défaut les angles se feront vers la droite
+      exemple : draw_square C1 20
+      (A partir du curseur C1 dessiner un carré de coté 20 pixels)
+
+Dessiner un cercle : 
+draw_circle -> draw_circle C x
+      exemple : draw_circle C1 20
+      (A partir du curseur C1 dessiner un cercle de rayon 20 pixels)
+
+Dessiner un arc : 
+draw_arc -> draw_arc C R a b 
+      exemple : draw_arc C1 15 60 90 
+      (A partir du curseur C1 dessiner un arc de cercle de rayon 15 avec pour angle de départ 60 degrés et pour angle de fin 90 degrés)
+
+Dessiner une ellipse : 
+draw_ellipse -> draw_ellipse C (x , y)
+      exemple : draw_ellipse C1 (10,15)
+      (A partir du curseur C1 dessiner un ellipse avec comme axe mineur 10 et axe majeur 15)
+
+Dessiner une étoile :
+draw_star -> draw_star c x y
+            exemple : draw_star C1 5 10
+            (A partir du curseur C1 dessiner une étoile avec 5 branches de chacunes 10 pixels)
+
+Remplir une forme :
+fill_shape -> fill_shape C (R , G , B) =>il faut que le curseur soit dans la forme 
+            exemple : fill_shape C (255,0,0)
+            (A partir de la localisation du curseur C1 remplir le carré en rouge)
+
+
+
+Animer une forme : 
+animate -> C animate shape animation =>il faut determiner les animations proposées et la vitesse
+		exemple : C1 animate circle rotate
+		(A partir de la localisation du curseur C1 animer le cercle et le faire tourner)
+		
+		
+Instructions évoluées :
+
+Instruction d'assignation : 
+var variable = value
+            exemple : var x = 150
+                        create_cursor C1 (x,x)
+            (Créer un curseur en coordonnées x et x, la variable x étant de 150)
+
+Instructions de bloc :
+def{}
+
+Instructions Conditionnelles :
+if (condition) : 
+instructions
+else :
+instructions
+		exemple : if (x > 5) {
+                        draw_circle(cursor, 10);
+                  } else {
+                        draw_square(cursor, 10);
+                  }
+            (Si la variable x est supérieure à 5, un cercle de rayon 10 est dessiné. Sinon, un carré de côté 10 est dessiné.)
+
+		
+Instructions Répétitives : 
+repeat (x){}
+repeat (5){}
+(Repeter l'action 5 fois)
