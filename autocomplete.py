@@ -1,67 +1,69 @@
+# This script integrates an autocomplete feature for a text widget, leveraging keywords from a JSON file.
+# It dynamically suggests completions based on the user's input and processes the content for syntax highlighting.
+
 import tkinter as tk
 import json
 from analyse_input import process_and_color_line_by_line_with_blocks
 
-# Charger les mots-clés depuis commandes.json
+# Load keywords from commandes.json
 def load_keywords():
     with open("commandes.json", "r") as file:
         data = json.load(file)
     keywords = list(data["commands"].keys()) + list(data["function"].keys()) + list(data["conditionals"].keys()) + list(data["loops"].keys())
     return keywords
 
-# Fonction d'autocomplétion
+# Autocomplete functionality
 class Autocomplete:
     def __init__(self, text_widget):
         self.text_widget = text_widget
         self.suggestion_box = None
         self.keywords = load_keywords()
-        self.suppress_analysis = False  # Flag pour éviter une analyse immédiate
-        self.current_suggestion = None  # Pour suivre la suggestion insérée
+        self.suppress_analysis = False  # Flag to temporarily suppress analysis
+        self.current_suggestion = None  # Track the current inserted suggestion
 
-        # Bind pour l'autocomplétion
+        # Bind the text widget for autocomplete
         self.text_widget.bind("<KeyRelease>", self.on_key_release)
 
     def enable(self):
         """
-        Active l'analyse après l'initialisation.
+        Enables analysis after initialization.
         """
         self.suppress_analysis = False
 
     def disable(self):
         """
-        Désactive temporairement l'analyse.
+        Temporarily disables analysis.
         """
         self.suppress_analysis = True
         
     def on_key_release(self, event):
         if self.suppress_analysis:
-            return  # Bloquer toute analyse temporairement
+            return  # Block any analysis temporarily
 
         self.close_suggestions()
         self.current_suggestion = None
 
-        # Logique d'autocomplétion...
+        # Autocomplete logic...
         current_line = self.text_widget.get("insert linestart", "insert")
         last_word = current_line.split()[-1] if current_line.split() else ""
 
-        # Trouver les suggestions possibles
+        # Find possible suggestions
         suggestions = [kw for kw in self.keywords if kw.startswith(last_word)]
 
         if suggestions and last_word:
             self.show_suggestions(suggestions)
 
-        # Relancer l'analyse après saisie normale
+        # Re-trigger analysis after regular input
         process_and_color_line_by_line_with_blocks(self.text_widget)
-
 
     def show_suggestions(self, suggestions):
         """
-        Affiche une liste de suggestions à proximité du curseur.
+        Displays a list of suggestions near the cursor.
         """
         if self.suggestion_box:
             self.suggestion_box.destroy()
 
-        # Positionner la boîte de suggestions
+        # Position the suggestion box
         x, y, _, _ = self.text_widget.bbox("insert")
         x_offset, y_offset = x + 20, y + 25
 
@@ -76,26 +78,24 @@ class Autocomplete:
 
         listbox.bind("<<ListboxSelect>>", lambda e: self.insert_suggestion(listbox))
 
-
     def insert_suggestion(self, listbox):
-        self.suppress_analysis = True  # Désactiver l'analyse pendant l'insertion
+        self.suppress_analysis = True  # Disable analysis during insertion
         selected = listbox.get(listbox.curselection())
         self.current_suggestion = selected
 
-        # Ajoute un point de séparation pour Undo/Redo
+        # Add a separator point for Undo/Redo
         self.text_widget.edit_separator()
 
-        # Supprimer le mot en cours et insérer la suggestion
+        # Delete the current word and insert the suggestion
         self.text_widget.delete("insert-1c wordstart", "insert")
         self.text_widget.insert("insert", selected + " ")
 
-        # Ajoute un point de séparation pour Undo/Redo après l'insertion
+        # Add another separator point for Undo/Redo after insertion
         self.text_widget.edit_separator()
 
         self.close_suggestions()
-        self.suppress_analysis = False  # Réactiver l'analyse
+        self.suppress_analysis = False  # Re-enable analysis
         process_and_color_line_by_line_with_blocks(self.text_widget)
-
 
     def close_suggestions(self):
         if self.suggestion_box:

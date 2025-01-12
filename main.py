@@ -1,4 +1,4 @@
 from text_edition import root
 
-# Démarrer l'interface
+# start idea
 root.mainloop()

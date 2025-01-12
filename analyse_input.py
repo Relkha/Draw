@@ -1,12 +1,15 @@
+# This script analyzes and tags lines of code, line by line, or entire code blocks, applying syntax highlighting or error marking.
+# It uses a Lexer for tokenization and a Parser for syntax validation.
+
 from lexer import Lexer
 from parser import Parser
 
 
 def process_and_color_line_by_line_with_blocks(text_widget):
     """
-    Analyse le contenu ligne par ligne et traite les blocs complets.
+    Analyzes the content line by line and processes complete blocks.
     """
-    # Récupérer le contenu du widget texte
+    # Retrieve the content of the text widget
     content = text_widget.get("1.0", "end-1c")
     lines = content.splitlines()
     inside_block = False
@@ -15,53 +18,50 @@ def process_and_color_line_by_line_with_blocks(text_widget):
 
     for line_number, line in enumerate(lines, start=1):
         stripped_line = line.strip()
-        print(f"Anlyse de la ligne : {line_number}")
+        print(f"Analyzing line: {line_number}")
 
-        # Détection de début de bloc `{`
+        # Detect block start `{`
         if "{" in stripped_line:
-            print(f"ligne {line_number} : debut de bloc")
+            print(f"Line {line_number}: block start")
             inside_block = True
         if inside_block:
             block_lines.append(line)
-            # Fin de bloc avec `}`
+            # Block end with `}`
             if "}" in stripped_line:
-                print(f"ligne{line_number} : fin de bloc")
+                print(f"Line {line_number}: block end")
                 inside_block = False
                 process_block(text_widget, block_lines, line_number - len(block_lines) + 1)
                 block_lines = []
             continue
         
-        # Analyse des lignes seules (hors bloc)
+        # Analyze individual lines (outside block)
         process_line(text_widget, line, line_number)
 
-        # Si la ligne est vide, continuez à analyser les suivantes
+        # Skip empty lines
         if not stripped_line:
-            print(f"ligne {line_number} vide")
+            print(f"Line {line_number} is empty")
             continue
 
-        #Supprimer uniquement les tags sur la ligne actuelle
+        # Remove tags only for the current line
         start_index = f"{line_number}.0"
         end_index = f"{line_number}.end"
         for tag in ["function", "conditional", "loop", "shape", "valid"]:
             text_widget.tag_remove(tag, start_index, end_index)
-        # Analyse des lignes seules (hors bloc)
-        print(f"lignbe{line_number} : analyse ligne hors bloc")
+        # Analyze individual lines (outside block)
+        print(f"Line {line_number}: analyzing outside block")
         process_line(text_widget, line, line_number)
-
-    
-   
 
 
 def process_block(text_widget, block_lines, start_line):
     """
-    Analyse un bloc complet délimité par `{}`.
+    Analyzes a complete block delimited by `{}`.
     """
     for tag in ["function", "conditional", "loop", "shape", "valid", "incorrect"]:
         text_widget.tag_remove(tag, "1.0", "end")
-    print(f"debut analyse bloc : ligne {start_line}")
+    print(f"Starting block analysis: line {start_line}")
     block_content = "\n".join(block_lines)
 
-    # Analyse lexicale et syntaxique
+    # Lexical and syntactic analysis
     lexer = Lexer(block_content)
     tokens = lexer.tokenize()
     parser = Parser(tokens)
@@ -71,71 +71,71 @@ def process_block(text_widget, block_lines, start_line):
     end_pos = f"{start_line + len(block_lines) - 1}.end"
 
     if not is_valid:
-        # Marquer tout le bloc comme incorrect
-        print("erreur dans le bloc")
+        # Mark the entire block as incorrect
+        print("Error in block")
         text_widget.tag_add("incorrect", start_pos, end_pos)
-        # Afficher le message d'erreur pour débogage ou tooltip
-        print(f"Erreur dans le bloc ({start_line}-{start_line + len(block_lines) - 1}): {error}")
+        # Display the error message for debugging or tooltip
+        print(f"Error in block ({start_line}-{start_line + len(block_lines) - 1}): {error}")
         return
 
-    # Si le bloc est valide, appliquer les tags
-    print(f"bloc valide")
+    # If the block is valid, apply tags
+    print(f"Block is valid")
     token_positions = calculate_token_positions(block_content, tokens, start_line)
     apply_tags_with_lexer(text_widget, token_positions)
-    print(f"Bloc valide détecté ({start_line}-{start_line + len(block_lines) - 1}).")
+    print(f"Valid block detected ({start_line}-{start_line + len(block_lines) - 1}).")
 
 def process_line(text_widget, line, line_number):
     """
-    Analyse une seule ligne et applique les tags.
+    Analyzes a single line and applies tags.
     """
     start_index = f"{line_number}.0"
     end_index = f"{line_number}.end"
 
-    # Supprimer les anciens tags pour cette ligne
+    # Remove old tags for this line
     for tag in ["function", "conditional", "loop", "shape", "keyword", "valid", "incorrect"]:
         text_widget.tag_remove(tag, start_index, end_index)
 
     if not line.strip():
-        print(f"Ligne {line_number} vide")
+        print(f"Line {line_number} is empty")
         return
 
-    # Analyse lexicale et syntaxique
+    # Lexical and syntactic analysis
     lexer = Lexer(line)
     tokens = lexer.tokenize()
     parser = Parser(tokens)
     is_valid, error_message = parser.parse()
 
-    print(f"Ligne {line_number} analysée : {line}")
-    print(f"Tokens générés : {tokens}")
-    print(f"Ligne valide : {is_valid}")
+    print(f"Line {line_number} analyzed: {line}")
+    print(f"Generated tokens: {tokens}")
+    print(f"Line valid: {is_valid}")
 
-    # Si la ligne est incorrecte, marquer la ligne comme incorrecte
+    # If the line is invalid, mark it as incorrect
     if not is_valid:
-        print(f"Ligne incorrecte : {error_message}")
+        print(f"Line incorrect: {error_message}")
         text_widget.tag_add("incorrect", start_index, end_index)
         return
 
-    # Appliquer les tags pour chaque token
+    # Apply tags for each token
     char_index = start_index
     for token_type, value in tokens:
         next_index = f"{char_index}+{len(value)}c"
         tag = get_tag_for_token_type(token_type)
 
         if tag:
-            print(f"Appliquer tag {tag} sur le token '{value}' (ligne {line_number})")
+            print(f"Applying tag {tag} on token '{value}' (line {line_number})")
             text_widget.tag_add(tag, char_index, next_index)
 
         char_index = next_index
 
 def calculate_token_positions(content, tokens, start_line):
     """
-    Calcule les positions des tokens dans le contenu pour des blocs multi-lignes.
+    Calculates token positions in the content for multi-line blocks.
     """
     token_positions = []
     lines = content.splitlines()
 
     for line_index, line in enumerate(lines, start=start_line):
-        current_col = 0  # Position actuelle dans la ligne
+        current_col = 0  # Current position in the line
 
         for token_type, value in tokens:
             if value in line[current_col:]:
@@ -153,7 +153,7 @@ def calculate_token_positions(content, tokens, start_line):
 
 def apply_tags_with_lexer(text_widget, token_positions):
     """
-    Applique les tags pour chaque token.
+    Applies tags for each token.
     """
     for token_type, value, start_pos, end_pos in token_positions:
         tag = get_tag_for_token_type(token_type)
@@ -162,7 +162,7 @@ def apply_tags_with_lexer(text_widget, token_positions):
 
 def get_tag_for_token_type(token_type):
     """
-    Retourne le tag correspondant à un type de token.
+    Returns the tag corresponding to a token type.
     """
     tags = {
         "KEYWORD": "keyword",

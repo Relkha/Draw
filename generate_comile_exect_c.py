@@ -1,7 +1,10 @@
+# A Python script for generating, compiling, and executing C code based on user-defined commands
 import os
 
-# Dictionnaire pour stocker les positions des curseurs
+# Dictionary to store cursor positions
 cursor_positions = {}
+
+# Generates C code for a specific command
 def generate_command_code(command):
     if command['command'] == 'create_cursor':
         return f'create_cursor("{command["name"]}", {command["x"]}, {command["y"]});'
@@ -32,23 +35,22 @@ def generate_command_code(command):
     elif command['command'] == 'draw_star':
         return f'draw_star("{command["name"]}", {command["branches"]}, {command["size"]});'
     elif command['command'] == 'var':
-        return f'int {command['name']} = {command['value']};'
+        return f'int {command["name"]} = {command["value"]};'
     else:
-        return None  # Pour les commandes non reconnues
+        return None
 
-
+# Generates and compiles the main.c file based on commands
 def generate_and_compile(commands_data):
     main_c_code = '''#include <stdio.h>
 #include <SDL2/SDL.h>
-#include "fonction.c"  // Inclure le fichier fonction.c
+#include "fonction.c"  // Include the external functions file
 
 int main() {
-    initialize_graphics();  // Initialisation de la fenêtre et du renderer
+    initialize_graphics();
 '''
 
     for command in commands_data:
         if command['command'] == 'repeat':
-            # Gestion spécifique pour repeat
             main_c_code += f'    for (int i = 0; i < {command["iterations"]}; i++) {{\n'
             for sub_command in command['block']:
                 generated_code = generate_command_code(sub_command)
@@ -56,7 +58,6 @@ int main() {
                     main_c_code += f'        {generated_code}\n'
             main_c_code += '    }\n'
         elif command['command'] == 'if':
-            # Gestion spécifique pour if
             main_c_code += f'    if ({command["condition"]}) {{\n'
             for sub_command in command['block']:
                 generated_code = generate_command_code(sub_command)
@@ -64,7 +65,6 @@ int main() {
                     main_c_code += f'        {generated_code}\n'
             main_c_code += '    }\n'
         elif command['command'] == 'else':
-            # Gestion spécifique pour else
             main_c_code += '    else {\n'
             for sub_command in command['block']:
                 generated_code = generate_command_code(sub_command)
@@ -72,7 +72,6 @@ int main() {
                     main_c_code += f'        {generated_code}\n'
             main_c_code += '    }\n'
         elif command['command'] == 'def':
-            # Gestion spécifique pour def
             function_code = f'void {command["name"]}() {{\n'
             for sub_command in command['block']:
                 generated_code = generate_command_code(sub_command)
@@ -81,12 +80,9 @@ int main() {
             function_code += '}\n'
             prepend_code_to_main(function_code)
         else:
-            # Générer le code pour les commandes simples
             generated_code = generate_command_code(command)
             if generated_code:
                 main_c_code += f'    {generated_code}\n'
-
-
 
     main_c_code += '''    SDL_Event event;
     int running = 1;
@@ -96,7 +92,7 @@ int main() {
                 running = 0;
             }
         }
-        SDL_Delay(10);  // Pause pour éviter une boucle trop rapide
+        SDL_Delay(10);
     }
 
     SDL_Quit();
@@ -104,37 +100,32 @@ int main() {
 }
 '''
 
-    # Écrire le code généré dans le fichier main.c
     with open("main.c", "w") as file:
         file.write(main_c_code)
-    print("main.c généré avec succès!")
+    print("main.c generated successfully!")
 
-    # Compiler et exécuter le fichier main.c
     compile_and_run()
-    
+
+# Prepends additional code to main.c
 def prepend_code_to_main(code):
     with open("main.c", "r") as file:
         content = file.read()
     with open("main.c", "w") as file:
         file.write(code + "\n" + content)
 
+# Compiles and runs the generated C code
 def compile_and_run():
-    # Compiler le code C
     compilation_result = os.system("gcc main.c -o draw_program -lSDL2 -lm")
     if compilation_result != 0:
-        print("Compilation échouée.")
+        print("Compilation failed.")
         return
 
-    # Vérifier si l'exécutable a été créé
     if not os.path.exists("./draw_program"):
-        print("L'exécutable n'a pas été trouvé.")
+        print("Executable not found.")
         return
 
-    # Exécuter le programme compilé
     execution_result = os.system("./draw_program")
     if execution_result != 0:
-        print("Erreur lors de l'exécution du programme.")
+        print("Program execution error.")
     else:
-        print("Le programme s'est exécuté avec succès.")
-
-    
+        print("Program executed successfully.")

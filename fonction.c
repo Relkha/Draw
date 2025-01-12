@@ -1,7 +1,8 @@
+// A program using SDL2 for creating cursors, drawing lines, and rendering geometric shapes.
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h> // Pour cos() et sin()
+#include <math.h>
 
 #define MAX_CURSORS 100
 #define MAX_LINES 100
@@ -17,57 +18,55 @@ typedef enum {
 
 typedef struct {
     ShapeType type;
-    int x, y;         // Position du centre
-    int param1, param2; // Paramètres spécifiques (rayon, largeur, hauteur, etc.)
-    int start_angle, end_angle; // Angles pour les arcs
-    int r, g, b;      // Couleur
-    int branches;     // Branches (étoiles uniquement)
+    int x, y;
+    int param1, param2;
+    int start_angle, end_angle;
+    int r, g, b;
+    int branches;
 } Shape;
 
 Shape shapes[MAX_SHAPES];
 int shape_count = 0;
 
-
 typedef struct {
     char name[50];
-    int x, y;         // Position
-    int r, g, b;      // Couleur
-    int thickness;    // Épaisseur
-    int visible;      // Visibilité
-    float angle;      // Orientation en degrés
+    int x, y;
+    int r, g, b;
+    int thickness;
+    int visible;
+    float angle;
 } Cursor;
 
 typedef struct {
     int x_start, y_start;
     int x_end, y_end;
-    int r, g, b;    // Couleur de la ligne
+    int r, g, b;
     int thickness;
 } Line;
 
 Cursor cursors[MAX_CURSORS];
-Line lines[MAX_LINES];  // Tableau pour stocker les lignes dessinées
+Line lines[MAX_LINES];
 int cursor_count = 0;
-int line_count = 0;      // Nombre de lignes dessinées
+int line_count = 0;
 
-// SDL Renderer et Window
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
-// Initialisation SDL
+// Initializes SDL and creates a window and renderer
 int initialize_graphics() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("Erreur d'initialisation SDL : %s\n", SDL_GetError());
+        printf("SDL initialization error: %s\n", SDL_GetError());
         return 0;
     }
-    window = SDL_CreateWindow("Dessin avec curseurs", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Drawing with Cursors", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if (!window) {
-        printf("Erreur de création de fenêtre : %s\n", SDL_GetError());
+        printf("Window creation error: %s\n", SDL_GetError());
         SDL_Quit();
         return 0;
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
-        printf("Erreur de création de renderer : %s\n", SDL_GetError());
+        printf("Renderer creation error: %s\n", SDL_GetError());
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 0;
@@ -78,7 +77,7 @@ int initialize_graphics() {
     return 1;
 }
 
-// Fonction utilitaire pour trouver un curseur par nom
+// Finds a cursor by its name
 Cursor* find_cursor(const char* name) {
     for (int i = 0; i < cursor_count; i++) {
         if (strcmp(cursors[i].name, name) == 0) {
@@ -88,39 +87,33 @@ Cursor* find_cursor(const char* name) {
     return NULL;
 }
 
+// Updates the screen by rendering all shapes, lines, and visible cursors
 void update_screen() {
-    // Effacer l'écran avec un fond blanc
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
-    // Dessiner toutes les lignes stockées avec une largeur réduite et centrée
     for (int i = 0; i < line_count; i++) {
         SDL_SetRenderDrawColor(renderer, lines[i].r, lines[i].g, lines[i].b, 255);
-
-        // Réduire la largeur de la ligne pour qu'elle reste petite
         int reduced_thickness = lines[i].thickness / 5;
         int half_reduced_thickness = reduced_thickness / 2;
 
         if (lines[i].x_start == lines[i].x_end) {
-            // Ligne verticale centrée
             SDL_Rect rect = {
                 lines[i].x_start - half_reduced_thickness, 
                 (lines[i].y_start < lines[i].y_end ? lines[i].y_start : lines[i].y_end),
-                reduced_thickness, // Largeur réduite
+                reduced_thickness,
                 abs(lines[i].y_end - lines[i].y_start)
             };
             SDL_RenderFillRect(renderer, &rect);
         } else if (lines[i].y_start == lines[i].y_end) {
-            // Ligne horizontale centrée
             SDL_Rect rect = {
                 (lines[i].x_start < lines[i].x_end ? lines[i].x_start : lines[i].x_end),
-                lines[i].y_start - half_reduced_thickness, // Centrer verticalement
+                lines[i].y_start - half_reduced_thickness,
                 abs(lines[i].x_end - lines[i].x_start),
-                reduced_thickness // Hauteur réduite
+                reduced_thickness
             };
             SDL_RenderFillRect(renderer, &rect);
         } else {
-            // Ligne inclinée (approximation par points avec largeur réduite et centrée)
             float dx = lines[i].x_end - lines[i].x_start;
             float dy = lines[i].y_end - lines[i].y_start;
             float length = sqrt(dx * dx + dy * dy);
@@ -136,10 +129,8 @@ void update_screen() {
         }
     }
 
-    // Dessiner tous les curseurs visibles
     for (int i = 0; i < cursor_count; i++) {
         if (cursors[i].visible) {
-            // Dessiner le curseur lui-même
             SDL_SetRenderDrawColor(renderer, cursors[i].r, cursors[i].g, cursors[i].b, 255);
             SDL_Rect rect = {
                 cursors[i].x - cursors[i].thickness / 2, 
@@ -151,7 +142,6 @@ void update_screen() {
         }
     }
 
-    // Dessiner toutes les formes géométriques stockées
     for (int i = 0; i < shape_count; i++) {
         SDL_SetRenderDrawColor(renderer, shapes[i].r, shapes[i].g, shapes[i].b, 255);
         switch (shapes[i].type) {
@@ -162,7 +152,6 @@ void update_screen() {
                     SDL_RenderDrawPoint(renderer, x, y);
                 }
                 break;
-
             case SHAPE_ARC:
                 for (int angle = shapes[i].start_angle; angle <= shapes[i].end_angle; angle++) {
                     int x = shapes[i].x + shapes[i].param1 * cos(angle * PI / 180.0);
@@ -170,7 +159,6 @@ void update_screen() {
                     SDL_RenderDrawPoint(renderer, x, y);
                 }
                 break;
-
             case SHAPE_ELLIPSE:
                 for (int angle = 0; angle < 360; angle++) {
                     int x = shapes[i].x + shapes[i].param1 * cos(angle * PI / 180.0);
@@ -178,46 +166,39 @@ void update_screen() {
                     SDL_RenderDrawPoint(renderer, x, y);
                 }
                 break;
+            case SHAPE_STAR: {
+                double angle_step = PI / shapes[i].branches;
+                int x_center = shapes[i].x;
+                int y_center = shapes[i].y;
 
-            case SHAPE_STAR:
-                {
-                    double angle_step = PI / shapes[i].branches;
-                    int x_center = shapes[i].x;
-                    int y_center = shapes[i].y;
+                int x_prev = x_center + shapes[i].param1 * cos(0);
+                int y_prev = y_center - shapes[i].param1 * sin(0);
 
-                    int x_prev = x_center + shapes[i].param1 * cos(0);
-                    int y_prev = y_center - shapes[i].param1 * sin(0);
+                for (int j = 1; j <= 2 * shapes[i].branches; j++) {
+                    double angle = j * angle_step;
+                    int length = (j % 2 == 0) ? shapes[i].param1 : shapes[i].param1 / 2;
+                    int x_next = x_center + length * cos(angle);
+                    int y_next = y_center - length * sin(angle);
 
-                    for (int j = 1; j <= 2 * shapes[i].branches; j++) {
-                        double angle = j * angle_step;
-                        int length = (j % 2 == 0) ? shapes[i].param1 : shapes[i].param1 / 2;
-                        int x_next = x_center + length * cos(angle);
-                        int y_next = y_center - length * sin(angle);
+                    SDL_RenderDrawLine(renderer, x_prev, y_prev, x_next, y_next);
 
-                        SDL_RenderDrawLine(renderer, x_prev, y_prev, x_next, y_next);
-
-                        x_prev = x_next;
-                        y_prev = y_next;
-                    }
+                    x_prev = x_next;
+                    y_prev = y_next;
                 }
+            }
                 break;
         }
     }
 
-    // Afficher le rendu final
     SDL_RenderPresent(renderer);
 }
 
-
-
-
-// Création d'un curseur
+// Creates a new cursor at the given position
 void create_cursor(const char* name, int x, int y) {
     if (cursor_count >= MAX_CURSORS) {
-        printf("Erreur : Nombre maximal de curseurs atteint.\n");
+        printf("Error: Maximum number of cursors reached.\n");
         return;
     }
-
     Cursor new_cursor;
     strncpy(new_cursor.name, name, sizeof(new_cursor.name) - 1);
     new_cursor.x = x;
@@ -227,137 +208,127 @@ void create_cursor(const char* name, int x, int y) {
     new_cursor.b = 0;
     new_cursor.thickness = 10;
     new_cursor.visible = 1;
-    new_cursor.angle = 0.0; // Angle initial = 0° (orienté vers la droite)
+    new_cursor.angle = 0.0;
 
     cursors[cursor_count++] = new_cursor;
 
-    printf("Curseur %s créé en position (%d, %d).\n", name, x, y);
+    printf("Cursor %s created at position (%d, %d).\n", name, x, y);
     update_screen();
 }
 
-// Changer la couleur d'un curseur
+// Changes the color of a cursor
 void color_cursor(const char* name, int r, int g, int b) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
-
     cursor->r = r;
     cursor->g = g;
     cursor->b = b;
 
-    printf("Couleur du curseur %s changée en (%d, %d, %d).\n", name, r, g, b);
+    printf("Cursor %s color changed to (%d, %d, %d).\n", name, r, g, b);
 }
 
+// Draws a line from the current cursor position
 void draw_line(const char* name, int length) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
-
-    // Coordonnées de départ
     int x_start = cursor->x;
     int y_start = cursor->y;
 
-    // Conversion de l'angle en radians
     float angle_rad = cursor->angle * (PI / 180.0);
 
-    // Calcul des nouvelles coordonnées en fonction de l'angle
     int x_end = x_start + (int)(cos(angle_rad) * length);
     int y_end = y_start - (int)(sin(angle_rad) * length);
 
-    // Ajouter la ligne au tableau avec l'épaisseur du curseur
     if (line_count < MAX_LINES) {
         lines[line_count++] = (Line){x_start, y_start, x_end, y_end, cursor->r, cursor->g, cursor->b, cursor->thickness};
     } else {
-        printf("Erreur : Nombre maximal de lignes atteint.\n");
+        printf("Error: Maximum number of lines reached.\n");
     }
 
-    // Mise à jour des coordonnées du curseur
     cursor->x = x_end;
     cursor->y = y_end;
-
-    // Mise à jour de l'écran
     update_screen();
 
-    printf("Ligne dessinée depuis (%d, %d) jusqu'à (%d, %d), épaisseur : %d.\n", x_start, y_start, x_end, y_end, cursor->thickness);
+    printf("Line drawn from (%d, %d) to (%d, %d), thickness: %d.\n", x_start, y_start, x_end, y_end, cursor->thickness);
 }
 
-// Afficher un curseur
+// Shows a cursor
 void show_cursor(const char* name) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
     cursor->visible = 1;
-    printf("Curseur %s affiché.\n", name);
+    printf("Cursor %s is now visible.\n", name);
     update_screen();
 }
 
-// Cacher un curseur
+// Hides a cursor
 void hide_cursor(const char* name) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
     cursor->visible = 0;
-    printf("Curseur %s caché.\n", name);
+    printf("Cursor %s is now hidden.\n", name);
     update_screen();
 }
 
-// Déplacer un curseur
+// Moves a cursor to a new position
 void move_cursor(const char* name, int x, int y) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
     cursor->x = x;
     cursor->y = y;
-    printf("Curseur %s déplacé à (%d, %d).\n", name, x, y);
+    printf("Cursor %s moved to (%d, %d).\n", name, x, y);
     update_screen();
 }
 
-// Tourner un curseur
+// Rotates a cursor by a given angle
 void rotate_cursor(const char* name, int angle) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
     cursor->angle += angle;
-    printf("Curseur %s tourné de %d°.\n", name, angle);
+    printf("Cursor %s rotated by %d degrees.\n", name, angle);
 }
 
-// Modifier l'épaisseur des traits d'un curseur
+// Sets the thickness of a cursor's lines
 void thickness_cursor(const char* name, int thickness) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
     cursor->thickness = thickness;
-    printf("Épaisseur du curseur %s définie à %d.\n", name, thickness);
+    printf("Cursor %s thickness set to %d.\n", name, thickness);
     update_screen();
 }
 
-
-// Dessiner un rectangle
+// Draws a rectangle from the cursor's position
 void draw_rectangle(const char* name, int width, int height) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
 
     int x = cursor->x;
     int y = cursor->y;
 
-    // Lignes du rectangle
     draw_line(name, width);
     rotate_cursor(name, 90);
     draw_line(name, height);
@@ -367,118 +338,85 @@ void draw_rectangle(const char* name, int width, int height) {
     draw_line(name, height);
     rotate_cursor(name, 90);
 
-    cursor->x = x; // Revenir à la position de départ
+    cursor->x = x;
     cursor->y = y;
 }
 
-// Dessiner un carré
+// Draws a square from the cursor's position
 void draw_square(const char* name, int size) {
     draw_rectangle(name, size, size);
 }
 
-// Dessiner un cercle
+// Draws a circle at the cursor's position
 void draw_circle(const char* name, int radius) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
 
-    // Ajouter le cercle au tableau
     if (shape_count < MAX_SHAPES) {
         shapes[shape_count++] = (Shape){SHAPE_CIRCLE, cursor->x, cursor->y, radius, 0, 0, 0, cursor->r, cursor->g, cursor->b, 0};
     } else {
-        printf("Erreur : Nombre maximal de formes atteint.\n");
+        printf("Error: Maximum number of shapes reached.\n");
     }
 
-    update_screen(); // Redessiner tout
-    printf("Cercle ajouté avec un rayon de %d.\n", radius);
+    update_screen();
+    printf("Circle added with radius %d.\n", radius);
 }
 
-// Dessiner un arc
+// Draws an arc at the cursor's position
 void draw_arc(const char* name, int radius, int start_angle, int end_angle) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
 
-    // Ajouter l'arc au tableau
     if (shape_count < MAX_SHAPES) {
         shapes[shape_count++] = (Shape){SHAPE_ARC, cursor->x, cursor->y, radius, 0, start_angle, end_angle, cursor->r, cursor->g, cursor->b, 0};
     } else {
-        printf("Erreur : Nombre maximal de formes atteint.\n");
+        printf("Error: Maximum number of shapes reached.\n");
     }
 
-    update_screen(); // Redessiner tout
-    printf("Arc ajouté avec un rayon de %d, de %d° à %d°.\n", radius, start_angle, end_angle);
+    update_screen();
+    printf("Arc added with radius %d, from %d to %d degrees.\n", radius, start_angle, end_angle);
 }
 
-
-// Dessiner une ellipse
+// Draws an ellipse at the cursor's position
 void draw_ellipse(const char* name, int width, int height) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
 
-    // Ajouter l'ellipse au tableau
     if (shape_count < MAX_SHAPES) {
-        shapes[shape_count++] = (Shape){
-            SHAPE_ELLIPSE,    // Type de la forme
-            cursor->x,        // Position du centre
-            cursor->y,        // Position du centre
-            width,            // Largeur (rayon horizontal)
-            height,           // Hauteur (rayon vertical)
-            0,                // Début d'angle inutilisé
-            0,                // Fin d'angle inutilisé
-            cursor->r,        // Couleur rouge
-            cursor->g,        // Couleur verte
-            cursor->b,        // Couleur bleue
-            0                 // Branches inutilisé
-        };
+        shapes[shape_count++] = (Shape){SHAPE_ELLIPSE, cursor->x, cursor->y, width, height, 0, 0, cursor->r, cursor->g, cursor->b, 0};
     } else {
-        printf("Erreur : Nombre maximal de formes atteint.\n");
+        printf("Error: Maximum number of shapes reached.\n");
         return;
     }
 
-    update_screen(); // Redessiner tout
-    printf("Ellipse ajoutée avec largeur %d et hauteur %d.\n", width, height);
+    update_screen();
+    printf("Ellipse added with width %d and height %d.\n", width, height);
 }
 
-// Dessiner une étoile
+// Draws a star at the cursor's position
 void draw_star(const char* name, int branches, int size) {
     Cursor* cursor = find_cursor(name);
     if (!cursor) {
-        printf("Erreur : Curseur %s non trouvé.\n", name);
+        printf("Error: Cursor %s not found.\n", name);
         return;
     }
 
-    // Ajouter l'étoile au tableau
     if (shape_count < MAX_SHAPES) {
-        shapes[shape_count++] = (Shape){
-            SHAPE_STAR,       // Type de la forme
-            cursor->x,        // Position du centre
-            cursor->y,        // Position du centre
-            size,             // Taille (longueur des branches)
-            0,                // Paramètre inutilisé
-            0,                // Début d'angle inutilisé
-            0,                // Fin d'angle inutilisé
-            cursor->r,        // Couleur rouge
-            cursor->g,        // Couleur verte
-            cursor->b,        // Couleur bleue
-            branches          // Nombre de branches
-        };
+        shapes[shape_count++] = (Shape){SHAPE_STAR, cursor->x, cursor->y, size, 0, 0, 0, cursor->r, cursor->g, cursor->b, branches};
     } else {
-        printf("Erreur : Nombre maximal de formes atteint.\n");
+        printf("Error: Maximum number of shapes reached.\n");
         return;
     }
 
-    update_screen(); // Redessiner tout
-    printf("Étoile ajoutée avec %d branches et taille %d.\n", branches, size);
+    update_screen();
+    printf("Star added with %d branches and size %d.\n", branches, size);
 }
-
-
-
-
