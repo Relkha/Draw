@@ -48,25 +48,84 @@ Set Color: color_cursor(name, r, g, b) – Sets the color (r, g, b) for the curs
 # Drawing Commands : 
 
 Draw Line: draw_line(name, length) – Draws a line of specified length.
+
 Draw Rectangle: draw_rectangle(name, width, height) – Draws a rectangle with given width and height.
+
 Draw Square: draw_square(name, size) – Draws a square with sides of size.
+
 Draw Circle: draw_circle(name, radius) – Draws a circle with a specified radius.
+
 Draw Ellipse: draw_ellipse(name, width, height) – Draws an ellipse with given width and height.
+
 Draw Arc: draw_arc(name, radius, start_angle, end_angle) – Draws an arc with a given radius and angles.
+
 Draw Star: draw_star(name, branches, size) – Draws a star with a specified number of branches and size.
 
 # Advanced Commands : 
 
 Variables: var name = value – Assigns a value to a variable.
+
 Conditionals: if, else – Allows conditional execution of commands.
+
 Loops: repeat(n) – Repeats a block of instructions n times.
+
 Functions: Custom blocks of reusable commands.
     
 
-# IDE Intégré 
-- Création et gestion de fichiers Draw++.
-- Exécution de programmes avec gestion des erreurs.
-- Outils pour zoomer, déplacer, et modifier des dessins.
+# Integrated IDE
+
+The Draw++ Integrated Development Environment (IDE) is a powerful, user-friendly tool that simplifies the process of creating, editing, and running Draw++ programs. Its features include:
+
+
+Tabbed File Management:
+
+Open, create, and manage multiple files in separate tabs.
+Rename tabs for better organization.
+Autosave and manual save options ensure your work is not lost.
+
+
+Real-Time Syntax Highlighting:
+
+Highlights commands, conditionals, loops, functions, and variables with distinct colors.
+Provides instant feedback on errors with red underlines.
+
+
+Interactive Command Validation:
+
+Validates syntax as you type, marking valid and invalid lines.
+Detects missing parameters or incorrect command usage.
+
+
+Code Execution:
+
+Runs your Draw++ code and displays the results in a graphical window.
+Supports real-time rendering of shapes, lines, and other elements.
+
+
+Undo/Redo Functionality:
+
+Easily revert or reapply changes to your code.
+
+
+Dark and Light Modes:
+
+Toggle between dark mode for comfortable nighttime use and light mode for daytime.
+
+
+Error Management:
+
+Errors in your code are highlighted for quick fixes.
+
+
+Interactive Documentation:
+
+Access built-in documentation directly from the IDE, providing explanations and examples of all commands.
+
+
+Auto-completion:
+
+Predicts and completes commands as you type, speeding up coding and reducing errors.
+
 
 
 # Documentation
